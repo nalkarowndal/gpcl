@@ -15,7 +15,12 @@ const files = {
   '/mini.html': ['mini.html', 'text/html; charset=utf-8'],
   '/mini.css': ['mini.css', 'text/css; charset=utf-8'],
   '/mini.js': ['mini.js', 'text/javascript; charset=utf-8'],
-  '/mini-scene.js': ['mini-scene.js', 'text/javascript; charset=utf-8']
+  '/mini-scene.js': ['mini-scene.js', 'text/javascript; charset=utf-8'],
+  '/art-preview.html': ['art-preview.html', 'text/html; charset=utf-8'],
+  '/art-preview.css': ['art-preview.css', 'text/css; charset=utf-8'],
+  '/art-preview.js': ['art-preview.js', 'text/javascript; charset=utf-8'],
+  '/engine/atlas.js': ['engine/atlas.js', 'text/javascript; charset=utf-8'],
+  '/engine/timing.js': ['engine/timing.js', 'text/javascript; charset=utf-8']
 };
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../public');
 const model = new OfficeModel();
