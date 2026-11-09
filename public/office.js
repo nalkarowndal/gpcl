@@ -258,7 +258,7 @@ function drawIdleResidents(ctx, t, count) {
   for (let i=0; i<residents.length; i++) {
     const p = residents[i];
     const index = Number(p.id.replace('npc-', '')) || 0;
-    drawCharacter(ctx, p.x, p.y, t, index, p.walking ? 'walking' : 'idle', p.name, false);
+    drawCharacter(ctx, p.x, p.y, t, index, p.walking && idleWorld.enabled ? 'walking' : 'idle', p.name, false);
     // These icons are fictional idle-life actions, not task progress.
     if (!p.walking && Math.sin(t*0.6+index*2) > -0.6) {
       const icon = {coffee:'COFFEE',chat:'...',read:'BOOK',rest:'Zz',desk:'...',plant:'LEAF',roam:'♪'}[p.action] || '...';
@@ -310,7 +310,8 @@ export function startOffice(canvas, getView) {
       }
       drawDesk(ctx, x, y, t, agent?.status || 'idle', i);
     }
-    if (idleWorld.enabled) drawIdleResidents(ctx, t, Math.max(2,6-agents.length));
+    // Pausing freezes residents in place; it must not make them vanish.
+    drawIdleResidents(ctx, t, Math.max(2,6-agents.length));
     drawHeader(ctx, view, t);
     // vignette framing and scanline accents.
     rect(ctx, 0, H - 3, W, 3, '#172635');
