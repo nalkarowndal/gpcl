@@ -5,7 +5,48 @@
 
 ![Status](https://img.shields.io/badge/node-%E2%89%A5%2020-8ac5a6?style=flat-square) ![Dependencies](https://img.shields.io/badge/runtime%20dependencies-0-93a8cf?style=flat-square)
 
-## NEW — 2.0 자동 감지 설치 (VS Code / Antigravity / ChatGPT 웹)
+## 3.0 — 방치형 사무실 및 Windows 포터블 실행파일 (.exe)
+
+이제 GPT 작업을 실행하지 않아도 6명의 가상 캐릭터가 사무실에서 자유롭게 생활합니다. **실제 AI 작업이 아니며, 별도의 NPC 방치 시뮬레이션**입니다.
+
+- **자율 생활:** 산책, 커피 타임, 수다, 독서, 쉬기, 책상 정리, 식물 돌보기
+- **충돌 회피:** 책상, 책장, 서버, 커피 바를 통과하지 않도록 격자 경로 탐색(A*) 적용
+- **일시정지 및 속도:** 방치형 동작을 멈추거나 1×/2×/3× 속도로 변경
+- **보기 모드:** IDLE(기본값), DEMO(가상 GPT 예시), LIVE(실제 연동 이벤트)
+- **독립 동작:** Codex/ChatGPT가 실행 중이지 않아도 NPC들은 활동. LIVE에서도 일부 NPC 생활은 계속 표시
+- **Windows 실행파일:** Node.js 설치, VSIX 설치, 웹브라우저 수동 실행 없이 포터블 exe 파일을 더블클릭하면 앱이 열리고 로컬 서버가 시작됩니다
+
+### Windows 사용자: 실행파일 다운로드
+
+1. [Windows Portable EXE 빌드 결과](https://github.com/nalkarowndal/gpcl/actions/workflows/windows-portable.yml) 페이지에서 최신 **성공한 main 브랜치 실행**을 엽니다.
+2. **Artifacts → GPT-Pixel-Office-Windows-Portable-x64**를 다운로드하여 ZIP을 풉니다.
+3. **`GPT-Pixel-Office-3.0.0-portable-x64.exe`**를 더블클릭합니다. **설치 마법사는 없으며 관리자 권한이 기본으로 필요하지 않습니다.**
+4. 실행 시 바로 방치형 사무실이 나타납니다. 좌측에서 IDLE/DEMO/LIVE를 선택하고 '잠시 멈추기' 또는 1×/2×/3×를 조절할 수 있습니다.
+5. 닫으면 앱이 종료됩니다. 웹의 ChatGPT·Codex 연결을 사용하려면 이전 문서의 브라우저 확장·로컬 기록 자동 감지 기능을 참고하세요.
+
+> **Windows 보안 경고:** 코드 서명되지 않은 새 실행파일이므로 Windows SmartScreen이 경고할 수 있습니다. GitHub 저장소의 소스 코드, CI 빌드 기록, `SHA256SUMS.txt`로 배포 파일을 검증하세요. 인터넷이나 외부 API 접속 없이도 방치형 모드는 동작합니다.
+
+> **실행 방식:** 포터블 exe는 자체적으로 Electron/Chromium과 서버 런타임을 포함합니다. 첫 실행 시 Windows 임시 폴더에 필요한 내부 구성요소를 풀 수는 있지만, 설치 프로그램을 실행하거나 시작 메뉴·레지스트리에 앱을 등록하지 않습니다. 앱 데이터(선택한 속도 등)는 사용자 프로필 저장소에 남을 수 있습니다.
+
+### 개발자: 직접 빌드
+
+Windows + Node.js 20 이상에서:
+
+```powershell
+git clone https://github.com/nalkarowndal/gpcl.git
+cd gpcl
+npm install
+npm test
+npm run build:portable
+```
+
+결과물: `dist/portable/GPT-Pixel-Office-3.0.0-portable-x64.exe`
+
+기존 `npm start`를 통한 웹 실행, `npm run codex`를 통한 이벤트 연동, VS Code/Antigravity VSIX 및 ChatGPT 브라우저 확장도 유지됩니다.
+
+---
+
+## 2.0 자동 감지 설치 (VS Code / Antigravity / ChatGPT 웹)
 
 **실행 단계를 줄인 설치 방식:** VS Code 계열 에디터에서 Pixel Office 확장을 설치하고 재시작하면 로컬 서버가 자동 시작됩니다. Codex IDE/CLI가 로컬 `~/.codex/sessions/YYYY/MM/DD/rollout-*.jsonl` 기록을 새로 작성할 때 상태 이벤트를 감지합니다. 이전 대화의 내용은 가져오지 않습니다. (외부 네트워크 연결 없음)
 
