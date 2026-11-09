@@ -9,7 +9,7 @@ test('Codex parser emits only metadata, not prompts or tool content', () => {
   const ctx = { id: 'temp', name: 'Codex', agentId: 'main', agentName: 'GPT Lead', active: false };
   const meta = parseCodexRecord({ type:'session_meta',payload:{ id:'123',cwd:'/home/example/project'} },ctx);
   assert.equal(meta[0].sessionId, 'rollout-123');
-  assert.equal(meta[0].sessionName, 'Codex · project');
+  assert.equal(meta[0].sessionName, 'Codex · Workspace');
   const prompt = 'SECRET user prompt 123';
   const start = parseCodexRecord({ type:'event_msg',payload:{ type:'user_message',message: prompt } },ctx);
   assert.equal(start[0].type, 'task.started');
