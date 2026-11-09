@@ -8,7 +8,7 @@
  */
 const { app, BrowserWindow, ipcMain, screen, Tray, Menu, nativeImage, dialog, shell } = require('electron');
 const { join } = require('node:path');
-const { existsSync, readFileSync, writeFileSync, mkdirSync } = require('node:fs');
+const { readFileSync, writeFileSync, mkdirSync } = require('node:fs');
 const { pathToFileURL } = require('node:url');
 const { sanitizePreferences, layoutSize, dockBounds, visibleBounds } = require('./settings.cjs');
 
@@ -87,6 +87,7 @@ function setLayout(layout) {
   const workArea = currentWorkArea();
   const size = layoutSize(layout);
   const previous = mini.getBounds();
+  mini.setMinimumSize(size.minWidth, size.minHeight);
   if (prefs.docked) applyBounds(dockBounds(workArea,layout));
   else applyBounds(visibleBounds({...previous,width:size.width,height:size.height},workArea));
   savePrefs(); sendSettings();
