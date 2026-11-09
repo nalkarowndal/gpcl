@@ -30,6 +30,7 @@ jobs:
           node --check public/office.js
           node --check public/idle-sim.js
           node --check desktop/main.cjs
+          node --check scripts/generate-icon.mjs
       - name: Tests
         run: npm test
       - name: Package VS Code / Antigravity extension
