@@ -26,3 +26,10 @@ code{font-family:Consolas,monospace}
 a{color:#bde8c4}
 footer{color:#c0c5c9;font-size:12px;line-height:1.8}
 .picker h2{margin:0}
+
+.character-gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:14px}
+.character-card{display:flex;flex-direction:column;align-items:center;gap:9px;padding:16px;
+ border:1px solid #6a7384;border-radius:12px;background:#2b3343}
+.character-card h3{font-size:16px;margin:0;color:#f5dfc6;letter-spacing:.4px}
+.character-card p{font-size:11px;color:#bbc9ce;text-align:center;min-height:30px;margin:0}
+.character-card canvas{width:192px;height:288px;max-width:100%;image-rendering:pixelated}
