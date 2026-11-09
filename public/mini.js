@@ -5,14 +5,25 @@ import { createFixedClock, advanceFixedClock } from './engine/timing.js';
 const $ = id=>document.getElementById(id);
 const bridge = window.pixelCompanion || null;
 const world = createCozyWorld();
-const art = {cat:null};
+const art = {cat:null,characters:Object.create(null)};
 const simulation = createFixedClock({hz:60,maxFrameMs:200,maxSteps:8});
 async function loadProofArt() {
-  try { art.cat=await loadAtlas('/assets/generated/cat-demo.json'); }
-  catch (error) {
-    // A missing atlas never stops the existing procedurally drawn companion.
-    console.warn('[Pixel Office] sprite atlas unavailable; using legacy cat drawing:', error.message);
-  }
+  // Each independently decoded sprite preserves the old procedural fallback
+  // if one atlas is missing or corrupt; no real GPT session is ever invented.
+  const sheets=[
+    ['cat','/assets/generated/cat-demo.json'],
+    ...['Mimi','Nori','Pico','Luna'].map(name=>
+      [name,'/assets/generated/character-'+name.toLowerCase()+'.json'])
+  ];
+  await Promise.all(sheets.map(async ([name,url])=>{
+    try {
+      const loaded=await loadAtlas(url);
+      if(name==='cat')art.cat=loaded;
+      else art.characters[name]=loaded;
+    }catch(error){
+      console.warn('[Pixel Office] using procedural fallback for '+name+': '+error.message);
+    }
+  }));
 }
 const canvas = $('room-canvas');
 const context = canvas.getContext('2d',{alpha:true});
