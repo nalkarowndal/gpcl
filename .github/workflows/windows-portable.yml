@@ -1,0 +1,58 @@
+name: Windows Portable EXE
+
+on:
+  push:
+    branches: [main, 'feat/idle-portable-exe']
+    paths:
+      - 'desktop/**'
+      - 'public/**'
+      - 'server/**'
+      - 'test/**'
+      - 'package.json'
+      - '.github/workflows/windows-portable.yml'
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-portable:
+    runs-on: windows-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Install Electron packaging tools
+        run: npm install --no-audit --no-fund
+      - name: Test idle motion and existing integrations
+        run: npm test
+      - name: Build direct-run Windows x64 portable executable
+        run: npm run build:portable
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+      - name: Validate EXE header, size and checksums
+        shell: pwsh
+        run: |
+          $exe = @(Get-ChildItem "dist/portable/GPT-Pixel-Office-*-portable-x64.exe" -ErrorAction Stop)
+          if ($exe.Count -ne 1) { throw "Expected exactly one portable .exe" }
+          if ($exe[0].Length -lt 20000000) { throw "Portable executable unexpectedly small" }
+          $stream = [System.IO.File]::OpenRead($exe[0].FullName)
+          try {
+            if ($stream.ReadByte() -ne 77 -or $stream.ReadByte() -ne 90) { throw "Not a valid Windows PE executable" }
+          } finally { $stream.Dispose() }
+          $hash = (Get-FileHash $exe[0].FullName -Algorithm SHA256).Hash
+          "$hash  $($exe[0].Name)" | Set-Content -Path "dist/portable/SHA256SUMS.txt" -Encoding utf8
+          Write-Host "Verified portable executable: $($exe[0].Name) ($($exe[0].Length) bytes)"
+      - name: Upload portable EXE (no installer)
+        uses: actions/upload-artifact@v4
+        with:
+          name: GPT-Pixel-Office-Windows-Portable-x64
+          path: |
+            dist/portable/*.exe
+            dist/portable/SHA256SUMS.txt
+          compression-level: 0
+          if-no-files-found: error
