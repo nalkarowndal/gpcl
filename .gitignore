@@ -6,3 +6,7 @@ node_modules/
 .data/
 coverage/
 *.log
+
+# Built extension and generated release assets
+extensions/vscode/runtime/
+dist/

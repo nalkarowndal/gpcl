@@ -7,19 +7,41 @@ on:
     branches: [main]
 
 jobs:
-  test:
+  test-and-package:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
       - name: Syntax check
         run: |
           node --check server/index.mjs
           node --check server/model.mjs
+          node --check server/codex-monitor.mjs
           node --check scripts/watch-codex.mjs
+          node --check scripts/prepare-extension.mjs
+          node --check scripts/package-vsix.mjs
+          node --check extensions/vscode/extension.js
+          node --check extensions/chatgpt-browser/background.js
+          node --check extensions/chatgpt-browser/content.js
+          node --check extensions/chatgpt-browser/popup.js
           node --check public/app.js
           node --check public/office.js
-      - name: Unit tests
+      - name: Tests
         run: npm test
+      - name: Package VS Code / Antigravity extension
+        run: npm run pack:vsix
+      - name: Package Chromium extension
+        run: |
+          mkdir -p dist
+          (cd extensions/chatgpt-browser && zip -q -r ../../dist/gpt-pixel-office-chatgpt-browser.zip .)
+          unzip -l dist/gpt-pixel-office-chatgpt-browser.zip | grep manifest.json
+      - name: Upload installable extensions
+        uses: actions/upload-artifact@v4
+        with:
+          name: gpt-pixel-office-extensions
+          path: |
+            dist/gpt-pixel-office.vsix
+            dist/gpt-pixel-office-chatgpt-browser.zip
+          if-no-files-found: error
