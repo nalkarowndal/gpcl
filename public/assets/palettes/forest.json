@@ -1,0 +1,22 @@
+{
+  "format": "gpcl-palette/v1",
+  "id": "forest",
+  "name": "Forest Studio",
+  "roles": {
+    "outline": "#324F4C",
+    "shadow": "#475C53",
+    "wallLight": "#9EAF91",
+    "wallShade": "#7F9C88",
+    "floor": "#8C977B",
+    "woodDark": "#576B5D",
+    "woodMid": "#8C9274",
+    "woodLight": "#BCC6A0",
+    "textile": "#B2BDA1",
+    "skin": "#F1C5AA",
+    "foliage": "#A4D59E",
+    "foliageShade": "#659876",
+    "lamp": "#FFDFA9",
+    "window": "#537765",
+    "highlight": "#F2F2D6"
+  }
+}
