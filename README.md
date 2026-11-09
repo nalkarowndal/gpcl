@@ -5,6 +5,43 @@
 
 ![Status](https://img.shields.io/badge/node-%E2%89%A5%2020-8ac5a6?style=flat-square) ![Dependencies](https://img.shields.io/badge/runtime%20dependencies-0-93a8cf?style=flat-square)
 
+## GPT Pixel Office 4.0 — Taskbar Cozy Companion (Windows portable EXE)
+
+이번 버전은 **TBH: Task Bar Hero**의 작업 표시줄 주변 방치형 실행 방식과 **Mini Cozy Room: Lo-Fi**의 아늑한 공간 및 집중 도구에서 영감을 얻어 독자적으로 제작한 **작은 데스크톱 컴패니언**입니다. 상용 게임의 원본 캐릭터·이미지·음악·맵·코드가 포함되어 있지 않습니다.
+
+- **기본 화면 = Room:** 픽셀아트 입체 방, 캐릭터 4명과 고양이 1마리가 업무와 무관하게 이동하고 휴식합니다.
+- **Taskbar 모드:** 상단의 ▰ 버튼을 눌러 작업 표시줄 바로 위에 놓기 쉬운 얇은 가로형 미니 창으로 전환합니다. *Windows 작업 표시줄 내부에 임베드하는 방식은 아니며 작업 표시줄 위의 영역에 정렬합니다.*
+- **투명·테두리 없는 창:** 제목 영역 드래그로 자유 이동, 항상 위 표시 On/Off, 투명도 55~100% 조절, 작업 표시줄 위로 정렬, 창 크기 조절을 지원합니다.
+- **트레이 상주:** × 버튼으로 숨기고 시스템 트레이 아이콘을 더블 클릭하면 다시 나타납니다. 트레이에서 Room/Taskbar 모드 변경, 전체 대시보드 열기, 상단 고정 및 클릭 통과 변경, 완전 종료가 가능합니다. 클릭 통과를 켜면 마우스 조작이 불가능하므로 **반드시 트레이에서 클릭 통과를 다시 해제하세요**.
+- **꾸미기:** 원본 방의 황혼/햇살/숲 테마 3종.
+- **집중 도구:** 로컬 25분 포모도로 타이머, 개인용 할 일 목록(최대 20개, 이 PC에만 저장). 온라인 계정 필요 없음.
+- **앰비언스:** 사용자가 클릭해 켜는 절제된 **직접 합성 빗소리**. 별도의 상용 Lo-Fi 음악 파일을 무단 사용하지 않습니다.
+- **GPT LIVE:** 실제 연동된 Codex/ChatGPT 웹 이벤트가 있을 때만 상태 표시. 화면에 있는 자율 NPC들은 작업 감지 에이전트가 아닙니다.
+- **성능:** 480px 기반 Canvas 2D 오리지널 장면, 최대 30FPS로 업데이트, GPU가 필요 없는 소규모 구성.
+- **실행:** 설치하지 않는 **Windows x64 단일 EXE**, Electron 엔진 포함. 별도 Node.js 설치 불필요.
+
+### Windows 설치 없이 시작
+
+**<https://github.com/nalkarowndal/gpcl/releases/tag/v4.0.0>** 에서 `GPT-Pixel-Office-4.0.0-portable-x64.exe` 다운로드 → 더블클릭합니다.
+
+이름이 동일한 v3.0.0 실행파일은 기존 대시보드 기반 디자인이므로 **v4.0.0**을 다운로드해야 위젯형 Room/Taskbar 모드를 사용할 수 있습니다.
+
+처음 실행하면 작은 방이 화면 가장자리, Windows 작업 표시줄 위에 나타납니다. 창을 닫아도 트레이에 상주하며, 트레이에서 **종료**를 선택하면 완전히 종료됩니다. 클릭 통과 시 트레이를 통해 조작을 복구하세요.
+
+빌드/검증:
+
+```powershell
+npm install
+npm test
+npm run build:portable
+```
+
+생성 결과: `dist/portable/GPT-Pixel-Office-4.0.0-portable-x64.exe`.
+
+**주의:** 이 빌드는 코드 서명되지 않았으므로 Windows SmartScreen 경고가 나타날 수 있습니다. GitHub Releases의 SHA256SUMS.txt로 실행 파일을 검증하세요. 실제 Task Bar Hero 게임의 전투·아이템·스팀 시장 거래나 Mini Cozy Room의 멀티플레이·상용 음악 기능을 복제한 프로젝트는 아닙니다.
+
+---
+
 ## 3.0 — 방치형 사무실 및 Windows 포터블 실행파일 (.exe)
 
 이제 GPT 작업을 실행하지 않아도 6명의 가상 캐릭터가 사무실에서 자유롭게 생활합니다. **실제 AI 작업이 아니며, 별도의 NPC 방치 시뮬레이션**입니다.
