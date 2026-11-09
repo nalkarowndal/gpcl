@@ -1,4 +1,4 @@
-import { readdir, readFile, stat, open } from 'node:fs/promises';
+import { readdir, stat, open } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { basename, join, resolve } from 'node:path';
 
@@ -25,12 +25,11 @@ export function parseCodexRecord(record, context) {
   if (!record || typeof record !== 'object') return [];
   const payload = record.payload || {};
   const result = [];
-  const base = { sessionId: context.id, sessionName: context.name, agentId: context.agentId, agentName: context.agentName };
-  const emit = (type, label) => result.push({ ...base, type, label });
+  const emit = (type, label) => result.push({ sessionId: context.id, sessionName: context.name, agentId: context.agentId, agentName: context.agentName, type, label });
 
   if (record.type === 'session_meta') {
     const id = typeof payload.id === 'string' && payload.id.length <= 100 ? payload.id : context.id;
-    context.id = 'rollout-' + id;
+    context.id = id.startsWith('rollout-') ? id : 'rollout-' + id;
     const cwd = typeof payload.cwd === 'string' ? basename(payload.cwd.replace(/[\\/]+$/, '')) : '';
     context.name = 'Codex · ' + (cwd.slice(0, 42) || 'Workspace');
     // Session logs may include subagents. No conversation contents are read into events.
