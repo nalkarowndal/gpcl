@@ -1,0 +1,22 @@
+{
+  "format": "gpcl-palette/v1",
+  "id": "sunrise",
+  "name": "Soft Sunrise",
+  "roles": {
+    "outline": "#5C5466",
+    "shadow": "#6A6277",
+    "wallLight": "#F7CFC0",
+    "wallShade": "#E3BCBD",
+    "floor": "#CDA18A",
+    "woodDark": "#936859",
+    "woodMid": "#CE9782",
+    "woodLight": "#F1D4B8",
+    "textile": "#EFD2CB",
+    "skin": "#F1C5AA",
+    "foliage": "#87B5A1",
+    "foliageShade": "#5E8D7C",
+    "lamp": "#FFEDB3",
+    "window": "#B4C5DB",
+    "highlight": "#FFF2D8"
+  }
+}
