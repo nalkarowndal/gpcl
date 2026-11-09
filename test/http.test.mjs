@@ -16,6 +16,13 @@ test('HTTP API, static dashboard and origin protections', async t => {
   assert.equal(javascript.status, 200);
   assert.match(javascript.headers.get('content-type'), /javascript/);
 
+  for(const [route,match] of [['/mini.html',/Little Pixel Office/],['/mini.js',/createCozyWorld/],
+    ['/mini.css',/scene-stage/],['/mini-scene.js',/renderCozyScene/]]){
+    const resp=await fetch(base+route);
+    assert.equal(resp.status,200,route+' should be served');
+    assert.match(await resp.text(),match);
+  }
+
   const accepted = await fetch(base + '/api/events', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
