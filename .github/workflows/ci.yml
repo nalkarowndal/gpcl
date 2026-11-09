@@ -36,6 +36,8 @@ jobs:
           node --check public/mini.js
           node --check public/art-preview.js
           node --check public/engine/atlas.js
+          node --check public/engine/character-animation.js
+          node --check scripts/g2-characters.mjs
           node --check public/engine/timing.js
           node --check scripts/build-art.mjs
           node --check scripts/validate-art.mjs
@@ -43,6 +45,14 @@ jobs:
           node --check scripts/generate-icon.mjs
       - name: Tests
         run: npm test
+      - name: Upload four original G2 sprite sheets for visual QA
+        uses: actions/upload-artifact@v4
+        with:
+          name: g2-original-character-atlases
+          path: |
+            public/assets/generated/character-*.png
+            public/assets/generated/character-*.json
+          if-no-files-found: error
       - name: Package VS Code / Antigravity extension
         run: npm run pack:vsix
       - name: Package Chromium extension
