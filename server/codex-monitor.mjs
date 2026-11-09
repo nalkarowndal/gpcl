@@ -30,8 +30,8 @@ export function parseCodexRecord(record, context) {
   if (record.type === 'session_meta') {
     const id = typeof payload.id === 'string' && payload.id.length <= 100 ? payload.id : context.id;
     context.id = id.startsWith('rollout-') ? id : 'rollout-' + id;
-    const cwd = typeof payload.cwd === 'string' ? basename(payload.cwd.replace(/[\\/]+$/, '')) : '';
-    context.name = 'Codex · ' + (cwd.slice(0, 42) || 'Workspace');
+    // Never expose a working-directory name or file path in dashboard events.
+    context.name = 'Codex · Workspace';
     // Session logs may include subagents. No conversation contents are read into events.
     const isSubagent = Boolean(payload.source?.subagent || payload.thread_source === 'subagent');
     if (isSubagent) {
@@ -105,7 +105,7 @@ export class CodexMonitor {
         files.push(join(dir, entry.name));
       }
     }
-    return files.slice(-MAX_FILES);
+    return files.sort().slice(-MAX_FILES);
   }
   async scan() {
     if (this.busy) return;
