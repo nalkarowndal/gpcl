@@ -20,7 +20,8 @@ const files = {
   '/art-preview.css': ['art-preview.css', 'text/css; charset=utf-8'],
   '/art-preview.js': ['art-preview.js', 'text/javascript; charset=utf-8'],
   '/engine/atlas.js': ['engine/atlas.js', 'text/javascript; charset=utf-8'],
-  '/engine/timing.js': ['engine/timing.js', 'text/javascript; charset=utf-8']
+  '/engine/timing.js': ['engine/timing.js', 'text/javascript; charset=utf-8'],
+  '/engine/character-animation.js': ['engine/character-animation.js', 'text/javascript; charset=utf-8']
 };
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../public');
 const model = new OfficeModel();
