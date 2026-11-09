@@ -26,6 +26,7 @@ test('HTTP API, static dashboard and origin protections', async t => {
   for(const [route,needle] of [
     ['/engine/atlas.js',/ATLAS_FORMAT/],
     ['/engine/timing.js',/advanceFixedClock/],
+    ['/engine/character-animation.js',/chooseCharacterAnimation/],
     ['/art-preview.html',/G1 Art Lab/],
     ['/art-preview.css',/\.palette/],
     ['/art-preview.js',/loadAtlas/]
@@ -54,6 +55,20 @@ test('HTTP API, static dashboard and origin protections', async t => {
   assert.equal(invalidAsset.status, 404);
   const missingAsset = await fetch(base + '/assets/generated/unknown.png');
   assert.equal(missingAsset.status, 404);
+
+  for (const name of ['mimi','nori','pico','luna']) {
+    const metadata = await fetch(base+'/assets/generated/character-'+name+'.json');
+    assert.equal(metadata.status,200,'G2 atlas '+name);
+    const decoded=await metadata.json();
+    assert.equal(decoded.frames.length,66);
+    assert.equal(Object.keys(decoded.animations).length,12);
+    const sprite=await fetch(base+'/assets/generated/character-'+name+'.png');
+    assert.equal(sprite.status,200,'G2 RGBA png '+name);
+    assert.equal(sprite.headers.get('content-type'),'image/png');
+    const signature=Buffer.from(await sprite.arrayBuffer()).subarray(0,8);
+    assert.equal(signature.toString('hex'),'89504e470d0a1a0a');
+  }
+  assert.match(previewHTML,/G2 Character Animation Showcase/);
 
   const accepted = await fetch(base + '/api/events', {
     method: 'POST',
