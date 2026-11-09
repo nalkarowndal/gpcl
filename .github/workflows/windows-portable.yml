@@ -2,7 +2,7 @@ name: Windows Portable EXE
 
 on:
   push:
-    branches: [main, 'feat/idle-portable-exe']
+    branches: [main, 'feat/**']
     paths:
       - 'desktop/**'
       - 'public/**'
@@ -60,12 +60,16 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v3.0.0
+          tag_name: v4.0.0
           target_commitish: ${{ github.sha }}
-          name: GPT Pixel Office 3.0.0 — Windows Portable
+          name: GPT Pixel Office 4.0.0 — Taskbar Cozy Companion
           body: |
             Standalone Windows x64 executable. No installer or separate Node.js installation.
-            Double-click the EXE to enjoy autonomous idle NPC life; CODEX / GPT LIVE remains optional.
+            Double-click the EXE to launch a frameless, transparent pixel-art room next to your Windows taskbar.
+            Switch freely between floating Cozy Room and compact Taskbar Strip.
+            Includes animated NPCs, cats, local focus timer, private To-Do notes, synthesized rain ambience,
+            theme presets, Windows tray controls, taskbar docking and separate optional GPT Live dashboard.
+            No installer or separate Node.js installation required.
             This executable is not digitally code-signed, so Windows SmartScreen may show a warning.
             Download SHA256SUMS.txt to verify the binary.
           files: |
