@@ -5,6 +5,39 @@
 
 ![Status](https://img.shields.io/badge/node-%E2%89%A5%2020-8ac5a6?style=flat-square) ![Dependencies](https://img.shields.io/badge/runtime%20dependencies-0-93a8cf?style=flat-square)
 
+## 4.1.0 — Phase G1: 픽셀아트 제작 파이프라인
+
+**G1의 목적은 G2~G6 그래픽 고도화가 사용할 공통 규격·검증 도구를 실제 코드에 도입하는 것입니다.**
+캐릭터 전면 리디자인(G2)과 가구 교체(G3)는 아직 포함되지 않으며 기존 Cozy Room 기능은 그대로 유지됩니다.
+
+**완료된 기반:**
+- 독자 제작 샘플 고양이: 32×32px 4프레임 PNG 아틀라스 + 이름·좌표·시간·피벗이 담긴 JSON
+- `public/engine/atlas.js`: 스프라이트 로더, 원점 기반 출력, 픽셀 정수 정렬, 프레임 재생, 형식 검증
+- `public/engine/timing.js`: NPC 업데이트(60Hz)와 렌더링(최대 30fps) 분리
+- `public/assets/palettes/{dusk,sunrise,forest}.json`: 공통 의미 키로 관리하는 3가지 테마 색상
+- `scripts/build-art.mjs`: 외부 이미지나 NPM 라이브러리 없이 원본 샘플 에셋 생성
+- `scripts/validate-art.mjs`: 색상/프레임/피벗/태그/파일 경로 및 실제 PNG IHDR 크기 검증
+- `scripts/export-aseprite.mjs`: 별도 설치된 Aseprite 원본을 PNG/JSON으로 내보내는 선택형 파이프라인
+- 기존 도형 고양이는 PNG 로딩 실패 시 자동 사용되는 폴백
+
+명세와 완료조건: [G1_ART_PIPELINE.md](docs/art/G1_ART_PIPELINE.md)
+
+개발자가 실행할 명령:
+
+```powershell
+npm run art:build
+npm run art:validate
+npm test
+npm start
+```
+
+Windows 포터블 EXE의 빌드도 `npm run build:portable`로 동일한 아트 생성/검증을 거칩니다.
+정식 v4.1.0 다운로드: <https://github.com/nalkarowndal/gpcl/releases/tag/v4.1.0>
+
+**다음 G2** 단계에서 캐릭터 4종의 실제 손제작 스프라이트와 행동별 프레임, 일관된 헤어·의상·눈 등의 디테일을 제작합니다.
+
+---
+
 ## GPT Pixel Office 4.0 — Taskbar Cozy Companion (Windows portable EXE)
 
 이번 버전은 **TBH: Task Bar Hero**의 작업 표시줄 주변 방치형 실행 방식과 **Mini Cozy Room: Lo-Fi**의 아늑한 공간 및 집중 도구에서 영감을 얻어 독자적으로 제작한 **작은 데스크톱 컴패니언**입니다. 상용 게임의 원본 캐릭터·이미지·음악·맵·코드가 포함되어 있지 않습니다.
