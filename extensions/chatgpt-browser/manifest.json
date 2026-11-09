@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "GPT Pixel Office — ChatGPT Activity Bridge",
+  "version": "2.0.0",
+  "description": "Shows visible ChatGPT response status in a local pixel-art office. No message text is read or transmitted.",
+  "permissions": ["storage"],
+  "host_permissions": [
+    "https://chatgpt.com/*",
+    "https://chat.openai.com/*",
+    "http://127.0.0.1/*",
+    "http://localhost/*"
+  ],
+  "background": { "service_worker": "background.js" },
+  "content_scripts": [
+    {
+      "matches": ["https://chatgpt.com/*", "https://chat.openai.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": { "default_popup": "popup.html", "default_title": "GPT Pixel Office" }
+}
