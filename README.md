@@ -20,6 +20,8 @@
 - `scripts/export-aseprite.mjs`: 별도 설치된 Aseprite 원본을 PNG/JSON으로 내보내는 선택형 파이프라인
 - 기존 도형 고양이는 PNG 로딩 실패 시 자동 사용되는 폴백
 
+**시각적 검사:** 앱 서버 실행 후 [G1 Art Lab](http://127.0.0.1:3333/art-preview.html)에서 팔레트 3종과 2×/4×/8× 스프라이트 프레임 비교.
+
 명세와 완료조건: [G1_ART_PIPELINE.md](docs/art/G1_ART_PIPELINE.md)
 
 개발자가 실행할 명령:
