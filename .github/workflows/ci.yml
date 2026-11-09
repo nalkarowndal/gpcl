@@ -34,6 +34,7 @@ jobs:
           node --check desktop/preload.cjs
           node --check public/mini-scene.js
           node --check public/mini.js
+          node --check public/art-preview.js
           node --check public/engine/atlas.js
           node --check public/engine/timing.js
           node --check scripts/build-art.mjs
