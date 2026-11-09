@@ -27,7 +27,7 @@ test('HTTP API, static dashboard and origin protections', async t => {
     ['/engine/atlas.js',/ATLAS_FORMAT/],
     ['/engine/timing.js',/advanceFixedClock/],
     ['/engine/character-animation.js',/chooseCharacterAnimation/],
-    ['/art-preview.html',/G1 Art Lab/],
+    ['/art-preview.html',/G2 Character Art Lab/],
     ['/art-preview.css',/\.palette/],
     ['/art-preview.js',/loadAtlas/]
   ]) {
