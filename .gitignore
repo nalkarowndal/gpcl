@@ -10,3 +10,5 @@ coverage/
 # Built extension and generated release assets
 extensions/vscode/runtime/
 dist/
+
+build/icon.ico

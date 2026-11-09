@@ -234,3 +234,19 @@ a { text-decoration: none; color: inherit; }
   .footer > span:last-child { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { * { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+
+
+/* v3: autonomous idle office */
+.idle-controls { margin: 18px 0 2px; padding: 12px; background: #203445; border: 1px solid #3b5a5e; border-radius: 10px; }
+.idle-controls-label { display: flex; justify-content: space-between; align-items: center; color: #b5ddc7; font: 850 10px/1.4 ui-monospace, Consolas, monospace; letter-spacing: 1.1px; }
+.idle-control-buttons { margin-top: 10px; display: flex; gap: 6px; }
+.idle-control-button { flex: 1; white-space: nowrap; border: 1px solid #42606b; background: #2d4051; color: #d4e1d9; border-radius: 6px; font-size: 10px; font-weight: 800; padding: 10px 4px; }
+.idle-control-button.active { background: #3c5b50; color: #b8ebc5; border-color: #6c9c84; }
+.idle-control-button:hover { border-color: #abdebd; }
+.idle-hint { font-size: 10px; color: #9fb7b6; margin: 10px 0 0; line-height: 1.6; }
+.agent-status.idle { background: #3c4c46; border-color: #607b68; color: #a4dcc0; }
+.progress-info[hidden] { display: none !important; }
+@media (max-width: 650px) {
+  .idle-controls { margin-top: 12px; }
+  .idle-control-buttons { max-width: 350px; }
+}
