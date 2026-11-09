@@ -23,6 +23,23 @@ test('HTTP API, static dashboard and origin protections', async t => {
     assert.match(await resp.text(),match);
   }
 
+  const atlas = await fetch(base + '/assets/generated/cat-demo.json');
+  assert.equal(atlas.status, 200);
+  assert.match(atlas.headers.get('content-type'), /json/);
+  const manifest = await atlas.json();
+  assert.equal(manifest.format, 'gpcl-atlas/v1');
+  const png = await fetch(base + '/assets/generated/cat-demo.png');
+  assert.equal(png.status, 200);
+  assert.equal(png.headers.get('content-type'), 'image/png');
+  const palette = await fetch(base + '/assets/palettes/dusk.json');
+  assert.equal(palette.status, 200);
+  const paletteJSON = await palette.json();
+  assert.equal(paletteJSON.format,'gpcl-palette/v1');
+  const invalidAsset = await fetch(base + '/assets/generated/private.aseprite.json');
+  assert.equal(invalidAsset.status, 404);
+  const missingAsset = await fetch(base + '/assets/generated/unknown.png');
+  assert.equal(missingAsset.status, 404);
+
   const accepted = await fetch(base + '/api/events', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
