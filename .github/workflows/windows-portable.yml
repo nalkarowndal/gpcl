@@ -8,6 +8,9 @@ on:
       - 'public/**'
       - 'server/**'
       - 'test/**'
+      - 'scripts/**'
+      - 'assets-source/**'
+      - 'docs/art/**'
       - 'package.json'
       - '.github/workflows/windows-portable.yml'
   pull_request:
@@ -60,14 +63,14 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v4.0.0
+          tag_name: v4.1.0
           target_commitish: ${{ github.sha }}
-          name: GPT Pixel Office 4.0.0 — Taskbar Cozy Companion
+          name: GPT Pixel Office 4.1.0 — G1 Pixel Art Pipeline
           body: |
-            Standalone Windows x64 executable. No installer or separate Node.js installation.
+            G1 graphics pipeline release: validated semantic palettes and sprite atlas runtime.\n            Standalone Windows x64 executable. No installer or separate Node.js installation.
             Double-click the EXE to launch a frameless, transparent pixel-art room next to your Windows taskbar.
             Switch freely between floating Cozy Room and compact Taskbar Strip.
-            Includes animated NPCs, cats, local focus timer, private To-Do notes, synthesized rain ambience,
+            Includes a new original 4-frame PNG cat sprite fixture (fallback to previous drawing),\n            fixed-step 60Hz NPC simulation and stable 30fps rendering, plus existing animated NPCs,\n            local focus timer, private To-Do notes, synthesized rain ambience,
             theme presets, Windows tray controls, taskbar docking and separate optional GPT Live dashboard.
             No installer or separate Node.js installation required.
             This executable is not digitally code-signed, so Windows SmartScreen may show a warning.
