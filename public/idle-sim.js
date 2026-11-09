@@ -104,8 +104,8 @@ function chooseActivity(world, p) {
 export function createIdleWorld({ count = 6, seed = 41 } = {}) {
   const world = { seed: seed>>>0, time: 0, residents: [], enabled: true, speed: 1, ticks: 0 };
   for (let i = 0; i < Math.max(0,Math.min(6,count)); i++) {
-    const x = 155 + (i%3)*45;
-    const y = 206 + (i%2)*80;
+    const positions = [[152,208],[172,295],[309,208],[309,295],[391,208],[388,297]];
+    const [x, y] = positions[i];
     const p = {id:'npc-'+i,name:PEOPLE[i],x,y,
       facing: i%2?'left':'right', action:'rest', nextAction:'rest',
       walking:false, wait:0.2+i*.5, path:[], step:0};
