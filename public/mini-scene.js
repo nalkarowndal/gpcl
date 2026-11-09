@@ -1,3 +1,4 @@
+import { drawAnimation } from './engine/atlas.js';
 /**
  * Original tiny isometric pixel-art environment.
  * Fictional autonomous citizens, not actual ChatGPT agents.
@@ -104,7 +105,11 @@ function drawWindow(ctx,c,t){
   }
   poly(ctx,[[119,98],[122,96],[122,120],[119,122]],c.trim);
 }
-function drawRoom(ctx,world,theme,working){
+function drawPet(ctx,art,x,y,t) {
+  // G1 atlas proof; always retain existing procedural fallback.
+  if (!drawAnimation(ctx,art?.cat,'idle',t*1000,x,y,1)) cat(ctx,x,y,t);
+}
+function drawRoom(ctx,world,theme,working,art){
   const t=world.time,c=THEMES[theme]||THEMES.dusk;
   // Floating transparent island, not a copy of any commercial game scene.
   const g=ctx.createRadialGradient(240,163,10,240,170,220);
@@ -157,14 +162,14 @@ function drawRoom(ctx,world,theme,working){
   // NPCs are fictional ambient residents.
   const items=world.people.slice().sort((a,b)=>a.y-b.y);
   for(const p of items)resident(ctx,p,world.people.indexOf(p),t,false);
-  cat(ctx,312+Math.sin(t*.5)*5,220,t);
+  drawPet(ctx,art,312+Math.sin(t*.5)*5,220,t);
   // Cozy particle sparkle.
   if(working){
     box(ctx,358,77,9,3,'#9ce2bd');
     label(ctx,'GPT LIVE',380,66,'#e9f9e2',8);
   }
 }
-function drawBar(ctx,world,theme,working){
+function drawBar(ctx,world,theme,working,art){
   const c=THEMES[theme]||THEMES.dusk,t=world.time;
   const g=ctx.createLinearGradient(0,0,0,123);g.addColorStop(0,c.sky+'04');g.addColorStop(.7,c.sky+'bb');g.addColorStop(1,c.dark+'ee');
   ctx.fillStyle=g;ctx.fillRect(0,0,480,122);
@@ -184,15 +189,15 @@ function drawBar(ctx,world,theme,working){
     const x=100+i*88+Math.sin(t*(.7+i*.18)+i)*21;
     resident(ctx,{...p,x,y:71,moving:p.moving,step:p.step},i,t,true);
   }
-  cat(ctx,430+Math.sin(t*.9)*6,75,t);
+  drawPet(ctx,art,430+Math.sin(t*.9)*6,75,t);
   if(working)label(ctx,'● GPT WORKING',394,16,'#c0f7d2',9);
 }
 /** Exposes a simple deterministic renderer usable by mini window or tests. */
-export function renderCozyScene(ctx,world,{layout='room',theme='dusk',working=false}={}){
+export function renderCozyScene(ctx,world,{layout='room',theme='dusk',working=false,art=null}={}){
   const height=layout==='bar'?122:290;
   ctx.clearRect(0,0,480,290);
-  if(layout==='bar')drawBar(ctx,world,theme,working);
-  else drawRoom(ctx,world,theme,working);
+  if(layout==='bar')drawBar(ctx,world,theme,working,art);
+  else drawRoom(ctx,world,theme,working,art);
   return {width:480,height};
 }
 export const roomThemes=Object.freeze(Object.keys(THEMES));
