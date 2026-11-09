@@ -5,6 +5,55 @@
 
 ![Status](https://img.shields.io/badge/node-%E2%89%A5%2020-8ac5a6?style=flat-square) ![Dependencies](https://img.shields.io/badge/runtime%20dependencies-0-93a8cf?style=flat-square)
 
+## NEW — 2.0 자동 감지 설치 (VS Code / Antigravity / ChatGPT 웹)
+
+**실행 단계를 줄인 설치 방식:** VS Code 계열 에디터에서 Pixel Office 확장을 설치하고 재시작하면 로컬 서버가 자동 시작됩니다. Codex IDE/CLI가 로컬 `~/.codex/sessions/YYYY/MM/DD/rollout-*.jsonl` 기록을 새로 작성할 때 상태 이벤트를 감지합니다. 이전 대화의 내용은 가져오지 않습니다. (외부 네트워크 연결 없음)
+
+### VS Code · Antigravity IDE 자동 감지
+
+1. [GitHub Actions](https://github.com/nalkarowndal/gpcl/actions)에서 최근 **성공한 Pixel Office CI** 실행을 열어 `gpt-pixel-office-extensions` 아티팩트를 다운로드해 압축을 풉니다.
+2. `gpt-pixel-office.vsix`를 VS Code 또는 Antigravity에서 **Extensions → ... → Install from VSIX...**로 설치합니다.
+3. Node.js 20 이상이 PATH에 설치되어 있어야 합니다. 에디터를 재시작/Reload Window하면 `onStartupFinished`가 로컬 Pixel Office 서버를 자동 실행합니다.
+4. 상태 표시줄의 `GPT Pixel Office`를 클릭하거나 명령 팔레트에서 `GPT Pixel Office: Open Dashboard`를 선택합니다.
+5. 에디터의 Codex 확장 또는 터미널에서 Codex 작업을 수행하면 새로운 세션 로그가 감지되어 LIVE 모드에 반영됩니다.
+
+Antigravity IDE는 VS Code 호환 확장 설치/실행 기능을 제공하는 버전에서 동작하도록 작성됐습니다. **Antigravity 자체 Gemini/에이전트의 비공개 실행 내역을 추적하는 기능은 아닙니다.** 별도의 공개 이벤트 API나 로컬 Codex 기록이 없으면 감지되지 않습니다.
+
+VSIX 직접 빌드:
+
+```bash
+npm run pack:vsix
+```
+
+성공 시 `dist/gpt-pixel-office.vsix` 생성. `gptPixelOffice.autoStart` 설정으로 에디터 자동 시작 여부를 조절할 수 있습니다.
+
+### ChatGPT 웹 채팅 · Work 화면 상태
+
+1. 위 GitHub Actions 아티팩트의 `gpt-pixel-office-chatgpt-browser.zip`을 압축 해제합니다.
+2. Chrome/Edge에서 **확장 프로그램 관리 → 개발자 모드 → 압축해제된 확장 프로그램 로드**를 선택하고, `manifest.json`이 있는 폴더를 지정합니다.
+3. 로컬 Office 서버가 켜진 상태에서 **chatgpt.com**에 접속해 채팅을 사용합니다.
+4. 브라우저 확장은 ChatGPT 화면의 **응답 중지 버튼 표시 여부만** 관찰하고, 시작·종료에 해당하는 이벤트를 로컬 서버에 보냅니다.
+5. 대시보드에서 **LIVE** 모드를 선택하면 `ChatGPT 웹 화면 · 관찰 기반` 세션이 나타납니다. 확장 프로그램 팝업에서 감지를 언제든지 일시 중지할 수 있습니다.
+
+**중요한 한계:** ChatGPT 웹의 DOM 표시는 OpenAI의 공식 개발자 이벤트 API가 아닙니다. 따라서 사이트 UI 업데이트에 따라 인식이 실패할 수 있고 중지 버튼이 없어지는 것이 항상 작업 성공을 뜻하지도 않습니다. 이것은 응답 표시 상태를 추정한 신호입니다. **ChatGPT Work**가 브라우저에 진행/중지 상태를 보여 주는 경우에만 같은 원리로 일부 감지될 수 있으며, 클라우드 내부 도구, 백그라운드 작업, 원격 브라우저 세션, 비공개 추론 진행률, 완전한 서브에이전트 구조는 자동 추적하지 못합니다. 데스크톱 앱의 내부 이벤트에도 접근하지 않습니다. 정확한 Work 진행률이 필요한 경우에는 외부 작업 러너가 `POST /api/events` 이벤트를 제공하도록 별도 통합해야 합니다.
+
+### 자동 감지 범위 및 개인정보
+
+| 환경 | 자동으로 감지되는 부분 | 감지할 수 없는 부분 |
+| --- | --- | --- |
+| Codex CLI / IDE | 로컬 rollout JSONL 파일의 시작/종료/도구 이벤트 | 파일 내용/사유/내부 추론 내용 (의도적으로 수집하지 않음) |
+| VS Code | 확장 자동 실행 및 Codex 로컬 기록 탐색 | GitHub Copilot/타 모델의 비공개 내부 작업 |
+| Antigravity IDE | 호환 VSIX 실행 및 로컬 Codex 기록 | Antigravity 고유 에이전트/Gemini 백엔드 |
+| ChatGPT 웹 채팅 | 화면에 표시된 응답 생성/종료 신호 | 비공개 모델/도구/정확한 진행률 |
+| ChatGPT Work 웹 | 브라우저 화면에 표시된 응답 상태에 한함 | 구동 중인 클라우드 작업, 원격 앱/파일 접근, 백그라운드 단계 |
+| ChatGPT Work 데스크톱 | 없음 (공식 자동 이벤트 인터페이스 없음) | 내부 작업 이벤트 및 에이전트 추적 |
+
+서버 기본 수신 주소는 `http://127.0.0.1:3333`이며, 브라우저 확장은 ChatGPT 도메인과 로컬 주소만 권한으로 요청합니다. 프롬프트, 메시지 내용, 쿠키, 인증 토큰, 방문 기록 등은 수집하거나 전송하지 않습니다. Codex 기록은 자동으로 읽지만 이벤트 종류 외의 민감 데이터는 출력하지 않습니다. `OFFICE_AUTO_DETECT=0 npm start`로 파일 감시를 중지할 수 있습니다.
+
+브라우저 확장은 `OFFICE_TOKEN` 보호가 설정된 서버에는 인증 없이 이벤트를 전송할 수 없으므로, 토큰 보호를 켰다면 별도의 인증 지원이 필요합니다. 로컬 서버를 공용 IP에 바인딩하지 마세요.
+
+---
+
 ## 기능
 
 - **실시간 픽셀아트 사무실:** 독자 제작 Canvas 2D 아트, 6개 책상, 손으로 그린 캐릭터, 타이핑·대기·완료 상태 애니메이션
@@ -59,7 +108,7 @@ Codex 자동화는 `codex exec --json -`의 JSONL 출력을 파싱합니다. Cod
 
 ## 외부 GPT / AI 에이전트 연결
 
-**일반 ChatGPT 채팅이나 ChatGPT Work의 내부 실행 상태는 공개된 작업 이벤트 피드를 이 앱에 자동으로 전송하지 않습니다.** 따라서 웹 ChatGPT 대화만으로는 LIVE에 캐릭터가 자동 표시되지 않습니다. 연결하려는 앱이나 에이전트 러너가 아래 이벤트를 직접 보내야 합니다.
+**ChatGPT 웹 채팅과 Work의 내부 도구 실행 상태는 공식 공개 실시간 이벤트 피드를 제공하지 않습니다.** 2.0 브라우저 확장을 설치하면 웹페이지에 드러나는 응답 생성 UI만 관찰할 수 있습니다. 그 외 작업 단계는 앱 또는 에이전트 러너에서 아래 이벤트를 직접 보내야 합니다.
 
 HTTP POST `http://127.0.0.1:3333/api/events`, `Content-Type: application/json`:
 
