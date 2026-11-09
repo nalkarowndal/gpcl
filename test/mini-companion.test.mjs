@@ -18,7 +18,8 @@ test('mini companion docks above taskbar on arbitrary multi-monitor workArea',()
   assert.ok(layoutSize('bar').height<layoutSize('room').height);
 });
 test('mini window saved preferences are validated and bounded',()=>{
-  assert.deepEqual(sanitizePreferences({layout:'unknown',opacity:-3,roomTheme:'evil'}),sanitizePreferences());
+  assert.deepEqual(sanitizePreferences({layout:'unknown',roomTheme:'evil'}),sanitizePreferences());
+  assert.equal(sanitizePreferences({opacity:-3}).opacity,.55);
   assert.equal(sanitizePreferences({layout:'bar',docked:false,opacity:.01}).opacity,.55);
   assert.equal(sanitizePreferences({opacity:99}).opacity,1);
   assert.equal(sanitizePreferences({opacity:Number.NaN}).opacity,1);
