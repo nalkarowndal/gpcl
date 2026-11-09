@@ -121,6 +121,24 @@ export const server = createServer(async (req, res) => {
       publish();
       return send(res, 202, { ok: true, id: event.id });
     }
+    // G1: serve only validated public sprite assets, never arbitrary repository files.
+    if (req.method === 'GET' && pathname.startsWith('/assets/')) {
+      const assetName = decodeURIComponent(pathname.slice('/assets/'.length));
+      if (!/^(generated|palettes)\/[A-Za-z0-9_-]+\.(png|json)$/.test(assetName))
+        return send(res, 404, { error: 'Unknown asset' });
+      const extension = assetName.endsWith('.png') ? 'image/png' : 'application/json; charset=utf-8';
+      try {
+        const contents = await readFile(resolve(root, 'assets', assetName));
+        res.writeHead(200, {
+          'Content-Type': extension, 'Cache-Control': 'public, max-age=60',
+          'X-Content-Type-Options': 'nosniff'
+        });
+        return res.end(contents);
+      } catch (error) {
+        if (error.code === 'ENOENT') return send(res, 404, { error: 'Asset not found' });
+        throw error;
+      }
+    }
     if (req.method === 'GET' && files[pathname]) {
       const [filename, mime] = files[pathname];
       const contents = await readFile(resolve(root, filename));
