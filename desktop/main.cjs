@@ -131,7 +131,7 @@ function showDashboard() {
     title:'GPT Pixel Office · Task Monitor',
     width:1360,height:900,minWidth:820,minHeight:580,
     backgroundColor:'#121b28',autoHideMenuBar:true,
-    webPreferences:{nodeIntegration:false,contextIsolation:true,sandbox:true,webSecurity:true},
+    webPreferences:{nodeIntegration: false,contextIsolation: true,sandbox: true,webSecurity:true},
   });
   lockNavigation(dashboard,serviceBase,'/');
   dashboard.on('closed',()=>{dashboard=null;});
@@ -197,7 +197,7 @@ async function createMini() {
     icon:ICON,show:false,
     webPreferences:{
       preload:join(__dirname,'preload.cjs'),
-      sandbox:true,nodeIntegration:false,contextIsolation:true,webSecurity:true,
+      sandbox: true,nodeIntegration: false,contextIsolation: true,webSecurity:true,
     },
   });
   mini.setOpacity(prefs.opacity);
