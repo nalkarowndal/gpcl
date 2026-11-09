@@ -11,8 +11,9 @@
     "test": "node --test",
     "prepare:extension": "node scripts/prepare-extension.mjs",
     "pack:vsix": "node scripts/prepare-extension.mjs && node scripts/package-vsix.mjs",
-    "build:portable": "electron-builder --win portable --x64 --publish never",
-    "desktop:dev": "electron ."
+    "build:portable": "node scripts/generate-icon.mjs && electron-builder --win portable --x64 --publish never",
+    "desktop:dev": "electron .",
+    "generate:icon": "node scripts/generate-icon.mjs"
   },
   "engines": {
     "node": ">=20"
