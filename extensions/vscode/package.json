@@ -6,16 +6,35 @@
   "version": "2.0.0",
   "license": "MIT",
   "private": false,
-  "engines": { "vscode": "^1.90.0" },
-  "categories": ["Visualization", "Other"],
-  "activationEvents": ["onStartupFinished"],
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Visualization",
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./extension.js",
   "contributes": {
     "commands": [
-      { "command": "gptPixelOffice.open", "title": "GPT Pixel Office: Open Dashboard" },
-      { "command": "gptPixelOffice.start", "title": "GPT Pixel Office: Start Auto Detection" },
-      { "command": "gptPixelOffice.stop", "title": "GPT Pixel Office: Stop Local Office" },
-      { "command": "gptPixelOffice.status", "title": "GPT Pixel Office: Check Connection" }
+      {
+        "command": "gptPixelOffice.open",
+        "title": "GPT Pixel Office: Open Dashboard"
+      },
+      {
+        "command": "gptPixelOffice.start",
+        "title": "GPT Pixel Office: Start Auto Detection"
+      },
+      {
+        "command": "gptPixelOffice.stop",
+        "title": "GPT Pixel Office: Stop Local Office"
+      },
+      {
+        "command": "gptPixelOffice.status",
+        "title": "GPT Pixel Office: Check Connection"
+      }
     ],
     "configuration": {
       "title": "GPT Pixel Office",
@@ -33,5 +52,12 @@
       }
     }
   },
-  "scripts": { "package": "vsce package --no-dependencies" }
+  "scripts": {
+    "package": "vsce package --no-dependencies"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nalkarowndal/gpcl.git"
+  },
+  "homepage": "https://github.com/nalkarowndal/gpcl"
 }
