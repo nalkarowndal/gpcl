@@ -1,8 +1,19 @@
 import { createCozyWorld, stepCozyWorld, renderCozyScene, roomThemes } from './mini-scene.js';
+import { loadAtlas } from './engine/atlas.js';
+import { createFixedClock, advanceFixedClock } from './engine/timing.js';
 
 const $ = id=>document.getElementById(id);
 const bridge = window.pixelCompanion || null;
 const world = createCozyWorld();
+const art = {cat:null};
+const simulation = createFixedClock({hz:60,maxFrameMs:200,maxSteps:8});
+async function loadProofArt() {
+  try { art.cat=await loadAtlas('/assets/generated/cat-demo.json'); }
+  catch (error) {
+    // A missing atlas never stops the existing procedurally drawn companion.
+    console.warn('[Pixel Office] sprite atlas unavailable; using legacy cat drawing:', error.message);
+  }
+}
 const canvas = $('room-canvas');
 const context = canvas.getContext('2d',{alpha:true});
 const basicSettings = {layout:'room',roomTheme:'dusk',alwaysOnTop:true,docked:true,opacity:1};
@@ -10,7 +21,6 @@ let settings={...basicSettings};
 let live={sessions:[],events:[]};
 let serverConnected=false;
 let rainAudio=null;
-let last=performance.now();
 let lastDraw=0;
 let petMessageUntil=0;
 const safeStorage={
@@ -54,16 +64,15 @@ async function command(name,value){
 }
 function draw(now){
   requestAnimationFrame(draw);
-  if(document.hidden)return;
-  const delta=Math.min(.06,Math.max(0,(now-last)/1000));
-  last=now;
-  if(now-lastDraw<33)return; // 30fps target for lightweight desktop companion.
+  // Draw rate and NPC movement are independent; do not lose half the time
+  // when rendering is throttled to 30fps.
+  advanceFixedClock(simulation,now,dt=>stepCozyWorld(world,dt),{paused:document.hidden});
+  if(document.hidden || now-lastDraw<1000/30)return;
   lastDraw=now;
-  stepCozyWorld(world,delta);
   context.setTransform(2,0,0,2,0,0);
   context.imageSmoothingEnabled=false;
   const working=(live.sessions||[]).some(s=>s.status==='working');
-  renderCozyScene(context,world,{layout:settings.layout,theme:settings.roomTheme,working});
+  renderCozyScene(context,world,{layout:settings.layout,theme:settings.roomTheme,working,art});
   if(petMessageUntil>now){
     context.font='bold 10px monospace';context.fillStyle='#fff4d6';
     context.textAlign='center';
@@ -222,6 +231,7 @@ async function init(){
   syncSettings(settings);
   renderTasks();updateTimer();renderConnection();
   setInterval(updateTimer,700);
+  loadProofArt();
   requestAnimationFrame(draw);
   connect();
 }

@@ -1,0 +1,22 @@
+{
+  "format": "gpcl-palette/v1",
+  "id": "dusk",
+  "name": "Warm Dusk",
+  "roles": {
+    "outline": "#292F47",
+    "shadow": "#3D3D57",
+    "wallLight": "#BA9EA3",
+    "wallShade": "#9A8C9A",
+    "floor": "#A78079",
+    "woodDark": "#76534D",
+    "woodMid": "#B58170",
+    "woodLight": "#DFC1A3",
+    "textile": "#D9B4B7",
+    "skin": "#F1C5AA",
+    "foliage": "#83A891",
+    "foliageShade": "#587D6D",
+    "lamp": "#FFD69A",
+    "window": "#676B86",
+    "highlight": "#F6E8D4"
+  }
+}

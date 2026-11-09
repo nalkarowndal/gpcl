@@ -15,7 +15,12 @@ const files = {
   '/mini.html': ['mini.html', 'text/html; charset=utf-8'],
   '/mini.css': ['mini.css', 'text/css; charset=utf-8'],
   '/mini.js': ['mini.js', 'text/javascript; charset=utf-8'],
-  '/mini-scene.js': ['mini-scene.js', 'text/javascript; charset=utf-8']
+  '/mini-scene.js': ['mini-scene.js', 'text/javascript; charset=utf-8'],
+  '/art-preview.html': ['art-preview.html', 'text/html; charset=utf-8'],
+  '/art-preview.css': ['art-preview.css', 'text/css; charset=utf-8'],
+  '/art-preview.js': ['art-preview.js', 'text/javascript; charset=utf-8'],
+  '/engine/atlas.js': ['engine/atlas.js', 'text/javascript; charset=utf-8'],
+  '/engine/timing.js': ['engine/timing.js', 'text/javascript; charset=utf-8']
 };
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../public');
 const model = new OfficeModel();
@@ -120,6 +125,24 @@ export const server = createServer(async (req, res) => {
       const event = model.ingest(await readJson(req));
       publish();
       return send(res, 202, { ok: true, id: event.id });
+    }
+    // G1: serve only validated public sprite assets, never arbitrary repository files.
+    if (req.method === 'GET' && pathname.startsWith('/assets/')) {
+      const assetName = decodeURIComponent(pathname.slice('/assets/'.length));
+      if (!/^(generated|palettes)\/[A-Za-z0-9_-]+\.(png|json)$/.test(assetName))
+        return send(res, 404, { error: 'Unknown asset' });
+      const extension = assetName.endsWith('.png') ? 'image/png' : 'application/json; charset=utf-8';
+      try {
+        const contents = await readFile(resolve(root, 'assets', assetName));
+        res.writeHead(200, {
+          'Content-Type': extension, 'Cache-Control': 'public, max-age=60',
+          'X-Content-Type-Options': 'nosniff'
+        });
+        return res.end(contents);
+      } catch (error) {
+        if (error.code === 'ENOENT') return send(res, 404, { error: 'Asset not found' });
+        throw error;
+      }
     }
     if (req.method === 'GET' && files[pathname]) {
       const [filename, mime] = files[pathname];
