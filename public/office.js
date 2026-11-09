@@ -1,3 +1,6 @@
+import { createIdleWorld, stepIdleWorld, idleSummary } from './idle-sim.js';
+export const idleWorld = createIdleWorld();
+export { idleSummary } from './idle-sim.js';
 const W = 480;
 const H = 320;
 const stationPositions = [[101, 137], [233, 137], [363, 137], [101, 235], [233, 235], [363, 235]];
@@ -173,7 +176,7 @@ function drawDesk(ctx, x, y, t, status, index) {
   rect(ctx, x - 27, y + 17, 4, 1, '#b08e76');
 }
 function drawCharacter(ctx, x, y, t, index, state, name, active) {
-  const bob = state === 'working' ? Math.round(Math.sin(t * 7 + index * 2)) : 0;
+  const bob = (state === 'working' || state === 'walking') ? Math.round(Math.sin(t * 9 + index * 2)) : 0;
   const coat = outfits[index % outfits.length];
   const hair = hairColors[index % hairColors.length];
   const skin = ['#e3ba9c','#c69079','#e8c3ad','#ae7d68'][index % 4];
@@ -187,7 +190,7 @@ function drawCharacter(ctx, x, y, t, index, state, name, active) {
   rect(ctx, px - 8, py - 7, 16, 16, coat);
   rect(ctx, px - 10, py - 5, 3, 10, coat);
   rect(ctx, px + 7, py - 5, 3, 10, coat);
-  if (state === 'working') {
+  if (state === 'working' || state === 'walking') {
     rect(ctx, px - 12, py + 3 + Math.round(Math.sin(t * 12 + index) * 2), 4, 3, skin);
     rect(ctx, px + 8, py + 3 + Math.round(Math.cos(t * 12 + index) * 2), 4, 3, skin);
   } else {
@@ -250,6 +253,22 @@ function drawHeader(ctx, view, t) {
     text(ctx, active + ' SESSION' + (active > 1 ? 'S' : ''), 241, 89, '#d9c6a9', 'bold 6px monospace');
   }
 }
+function drawIdleResidents(ctx, t, count) {
+  const residents = idleWorld.residents.slice(0, count).sort((a,b) => a.y-b.y);
+  for (let i=0; i<residents.length; i++) {
+    const p = residents[i];
+    const index = Number(p.id.replace('npc-', '')) || 0;
+    drawCharacter(ctx, p.x, p.y, t, index, p.walking ? 'walking' : 'idle', p.name, false);
+    // These icons are fictional idle-life actions, not task progress.
+    if (!p.walking && Math.sin(t*0.6+index*2) > -0.6) {
+      const icon = {coffee:'COFFEE',chat:'...',read:'BOOK',rest:'Zz',desk:'...',plant:'LEAF',roam:'♪'}[p.action] || '...';
+      const bx = Math.round(p.x+13), by = Math.round(p.y-49);
+      const width = Math.max(20, icon.length*4.5+8);
+      roundPanel(ctx, bx, by, width, 11, '#e8e0c4', '#837f77');
+      text(ctx, icon, bx+width/2, by+8, '#435a5a', 'bold 6px monospace');
+    }
+  }
+}
 export function startOffice(canvas, getView) {
   const ctx = canvas.getContext('2d', { alpha: false });
   if (!ctx) return () => {};
@@ -265,6 +284,7 @@ export function startOffice(canvas, getView) {
     frame += delta;
     const t = frame;
     const view = getView() || { sessions: [] };
+    if (!document.hidden) stepIdleWorld(idleWorld, delta);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.imageSmoothingEnabled = false;
     drawWall(ctx, t);
@@ -290,11 +310,12 @@ export function startOffice(canvas, getView) {
       }
       drawDesk(ctx, x, y, t, agent?.status || 'idle', i);
     }
+    if (idleWorld.enabled) drawIdleResidents(ctx, t, Math.max(2,6-agents.length));
     drawHeader(ctx, view, t);
     // vignette framing and scanline accents.
     rect(ctx, 0, H - 3, W, 3, '#172635');
     requestAnimationFrame(render);
   }
-  const raf = requestAnimationFrame(render);
+  let raf = requestAnimationFrame(render);
   return () => { active = false; cancelAnimationFrame(raf); };
 }
