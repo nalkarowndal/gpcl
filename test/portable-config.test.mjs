@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { createPixelOfficeIco } from '../scripts/generate-icon.mjs';
 
 test('desktop is a single-file portable exe target, not an installer', async () => {
   const pkg=JSON.parse(await readFile(new URL('../package.json',import.meta.url),'utf8'));
@@ -22,10 +23,11 @@ test('portable Electron window uses secure isolated renderer and local server', 
 });
 
 test('pixel-art executable icon is a valid ICO container with multiple sizes', async () => {
-  const icon = await readFile(new URL('../build/icon.ico', import.meta.url));
+  const icon = createPixelOfficeIco();
   assert.equal(icon.readUInt16LE(0), 0);
   assert.equal(icon.readUInt16LE(2), 1);
-  assert.ok(icon.readUInt16LE(4) >= 3);
+  assert.ok(icon.readUInt16LE(4) >= 5);
+  assert.equal(icon[6+(icon.readUInt16LE(4)-1)*16],0); // 0 means 256x256
   const count = icon.readUInt16LE(4);
   for (let i=0;i<count;i++) {
     const at=6+i*16;
