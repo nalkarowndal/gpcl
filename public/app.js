@@ -1,4 +1,4 @@
-import { startOffice } from './office.js';
+import { startOffice, idleWorld, idleSummary } from './office.js';
 
 const $ = id => document.getElementById(id);
 const colors = ['#a7d8bd', '#ebb79b', '#bab5e4', '#e6ca90', '#9cbbda', '#e6a8ae'];
@@ -47,14 +47,18 @@ function newDemo() {
 
 let demo = newDemo();
 let live = { sessions: [], events: [] };
-let mode = 'demo';
+let mode = 'idle';
 let filter = 'all';
-let manualMode = false;
-let selectedId = demo.sessions[0].id;
+let manualMode = true;
+let selectedId = '';
 let connected = false;
 let demoStep = 0;
 
-function current() { return mode === 'demo' ? demo : live; }
+const quiet = { sessions: [], events: [] };
+function current() { return mode === 'demo' ? demo : mode === 'live' ? live : quiet; }
+function npcActivities() {
+  return idleSummary(idleWorld).activities;
+}
 function agentsOf(data) { return data.sessions.flatMap(s => s.agents.map(a => ({ ...a, sessionId: s.id }))); }
 function selectedSession(data) { return data.sessions.find(s => s.id === selectedId) || data.sessions[0] || null; }
 function getStats(data) {
@@ -84,17 +88,22 @@ function setConnection(value) {
 function switchMode(next, manual = true) {
   mode = next;
   if (manual) manualMode = true;
-  for (const option of ['demo','live']) {
+  for (const option of ['idle','demo','live']) {
     const button = $('mode-' + option);
     button.classList.toggle('active', mode === option);
     button.setAttribute('aria-pressed', String(mode === option));
   }
-  $('mode-help').textContent = mode === 'demo'
-    ? '이 화면은 시연용 예시입니다. 실제 GPT 실행과 연결되어 있지 않습니다.'
-    : '실제 Codex CLI 또는 API로 수신된 작업만 표시합니다.';
-  $('canvas-mode-label').textContent = mode === 'demo' ? '● DEMO WORLD' : '● LIVE EVENTS';
-  $('canvas-mode-label').classList.toggle('demo-label', mode === 'demo');
-  $('canvas-status').textContent = mode === 'demo' ? 'SIMULATION IS RUNNING' : 'AWAITING REAL TASK EVENTS';
+  $('mode-help').textContent = mode === 'idle'
+    ? 'GPT 작업 없이도 픽셀 친구들이 자유롭게 생활합니다.'
+    : mode === 'demo'
+      ? '예시 작업 데이터입니다. 실제 GPT 실행과 연결된 기록이 아닙니다.'
+      : '실제 Codex CLI 또는 API에서 수신한 작업만 표시합니다.';
+  $('canvas-mode-label').textContent = mode === 'idle' ? '● IDLE LIFE' : mode === 'demo' ? '● DEMO WORLD' : '● LIVE EVENTS';
+  $('canvas-mode-label').classList.toggle('demo-label', mode !== 'live');
+  $('canvas-status').textContent = mode === 'idle'
+    ? 'LITTLE OFFICE IS ALIVE' : mode === 'demo' ? 'SIMULATION IS RUNNING' : 'AWAITING REAL TASK EVENTS';
+  $('now-playing-label').textContent = mode === 'idle' ? 'LIFE IN THE OFFICE' : 'CURRENTLY WORKING ON';
+  $('progress-info').hidden = mode === 'idle';
   selectedId = current().sessions[0]?.id || '';
   render();
 }
@@ -114,11 +123,14 @@ function renderSessions(data) {
   $('session-count').textContent = String(data.sessions.length).padStart(2,'0');
   const container = $('session-list');
   container.replaceChildren();
-  if (!data.sessions.length) return container.append(dom('div','empty-state','아직 작업 세션이 없습니다. Codex CLI 실행 후 이곳에 표시됩니다.'));
+  if (!data.sessions.length) return container.append(dom('div','empty-state',
+    mode === 'idle' ? '방치형 공간입니다. 실제 세션은 LIVE 탭에서 확인할 수 있어요.' : '아직 작업 세션이 없습니다. Codex CLI 실행 후 표시됩니다.'));
   data.sessions.forEach((s, i) => container.append(createSessionItem(s,i)));
 }
 function renderAgents(data) {
-  const agents = agentsOf(data);
+  const agents = mode === 'idle'
+    ? npcActivities().map((p,i) => ({...p,id:'npc'+i,role:'resident',status:'idle'}))
+    : agentsOf(data);
   $('agent-count').textContent = String(agents.length).padStart(2,'0');
   const list = $('agent-list');
   list.replaceChildren();
@@ -128,8 +140,10 @@ function renderAgents(data) {
     const avatar = dom('span','agent-avatar', agent.role === 'lead' ? '✦' : (agent.name[0] || 'A').toUpperCase());
     avatar.style.background = colors[i % colors.length];
     const block = dom('div');
-    block.append(dom('strong','',agent.name), dom('small','',agent.role === 'lead' ? 'Lead agent' : 'Team agent'));
-    item.append(avatar,block,dom('span','agent-status ' + agent.status,status(agent.status)));
+    block.append(dom('strong','',agent.name),
+      dom('small','',agent.role === 'resident' ? agent.label : (agent.role === 'lead' ? 'Lead agent' : 'Team agent')));
+    item.append(avatar,block,dom('span','agent-status ' + agent.status,
+      agent.role === 'resident' ? 'NPC' : status(agent.status)));
     list.append(item);
   });
 }
@@ -141,6 +155,23 @@ function eventClass(type) {
   return '';
 }
 function renderEvents(data) {
+  if (mode === 'idle') {
+    const activities = npcActivities();
+    $('event-total').textContent = String(activities.length);
+    const list = $('activity-list');
+    list.replaceChildren(dom('div','activity-day','PIXEL RESIDENTS / FICTIONAL IDLE ACTIONS'));
+    for (const [i, person] of activities.entries()) {
+      const row = dom('div','event');
+      const symbol = dom('span','event-symbol', ['☕','♫','✦','✿','✧','☼'][i%6]);
+      const body = dom('div','event-content');
+      const meta = dom('div','event-meta');
+      meta.append(dom('strong','',person.name), dom('time','', 'NPC'));
+      body.append(meta,dom('p','',person.label || '산책'),
+        dom('span','event-tag','IDLE / SIMULATED'));
+      row.append(symbol,body);list.append(row);
+    }
+    return;
+  }
   $('event-total').textContent = String(data.events.length);
   const events = data.events.filter(e => filter === 'all' ||
     (filter === 'tasks' && (e.type.startsWith('task.') || e.type.startsWith('session.'))) ||
@@ -163,6 +194,26 @@ function renderEvents(data) {
   });
 }
 function renderDetails(data) {
+  if (mode === 'idle') {
+    const summary = idleSummary(idleWorld);
+    $('stat-agents').replaceChildren(document.createTextNode(String(summary.residents)),dom('span','stat-suffix',' 명'));
+    $('stat-completed').replaceChildren(document.createTextNode('0'),dom('span','stat-suffix',' 작업'));
+    $('stat-tools').replaceChildren(document.createTextNode('0'),dom('span','stat-suffix',' 회'));
+    $('progress-value').textContent = '0%';
+    $('progress-fill').style.width = '0%';
+    $('detail-heading').textContent = '사무실 생활 ✳';
+    $('detail-title').textContent = '오늘도 평화로운 픽셀 오피스';
+    $('detail-status').textContent = idleWorld.enabled ? 'IDLE LIFE' : 'PAUSED';
+    $('detail-completed').textContent = '0';
+    $('detail-tools').textContent = '0';
+    $('detail-agents').textContent = String(summary.residents);
+    $('current-task').textContent = idleWorld.enabled
+      ? '일과 관계없이 ' + summary.residents + '명의 픽셀 친구들이 자유롭게 생활하고 있어요'
+      : '방치형 사무실이 일시 정지되었습니다';
+    $('detail-description').textContent = '산책, 독서, 커피 타임, 휴식 등은 실제 AI 작업이 아닌 가상 캐릭터의 행동입니다.';
+    return;
+  }
+  $('detail-heading').textContent = '프로젝트 진행 상황 ✳';
   const session = selectedSession(data);
   const stats = getStats(data);
   $('stat-agents').replaceChildren(document.createTextNode(String(stats.working)),dom('span','stat-suffix',' 명'));
@@ -236,6 +287,7 @@ async function connect() {
   window.addEventListener('pagehide', () => source.close(), { once:true });
 }
 
+$('mode-idle').addEventListener('click', () => switchMode('idle'));
 $('mode-demo').addEventListener('click', () => switchMode('demo'));
 $('mode-live').addEventListener('click', () => switchMode('live'));
 document.querySelectorAll('.filter').forEach(button => button.addEventListener('click', () => {
@@ -257,9 +309,33 @@ $('copy-command').addEventListener('click', async () => {
   }
 });
 function tickClock() { $('office-clock').textContent = new Date().toLocaleTimeString('ko-KR', { hour:'2-digit', minute:'2-digit', hour12:false }); }
+let idlePrefs = {};
+try { idlePrefs = JSON.parse(localStorage.getItem('pixelOffice.idlePrefs') || '{}'); } catch { /* optional settings */ }
+idleWorld.enabled = idlePrefs.enabled !== false;
+idleWorld.speed = [1,2,3].includes(idlePrefs.speed) ? idlePrefs.speed : 1;
+function saveIdlePrefs() {
+  try { localStorage.setItem('pixelOffice.idlePrefs', JSON.stringify({enabled:idleWorld.enabled,speed:idleWorld.speed})); }
+  catch { /* local storage may be blocked */ }
+}
+function renderIdleButtons() {
+  $('idle-toggle').textContent = idleWorld.enabled ? 'Ⅱ 잠시 멈추기' : '▶ 다시 움직이기';
+  $('idle-toggle').classList.toggle('active',idleWorld.enabled);
+  $('idle-toggle').setAttribute('aria-pressed',String(idleWorld.enabled));
+  $('idle-speed').textContent = idleWorld.speed + '× 속도';
+}
+$('idle-toggle').addEventListener('click', () => {
+  idleWorld.enabled = !idleWorld.enabled;
+  saveIdlePrefs();renderIdleButtons();render();
+});
+$('idle-speed').addEventListener('click', () => {
+  idleWorld.speed = idleWorld.speed === 3 ? 1 : idleWorld.speed + 1;
+  saveIdlePrefs();renderIdleButtons();
+});
+renderIdleButtons();
 tickClock();
 setInterval(tickClock, 20000);
 setInterval(simulate, 4200);
+setInterval(() => { if (mode === 'idle' && !document.hidden) render(); }, 3000);
 startOffice($('officeCanvas'), current);
-render();
+switchMode('idle',true);
 connect();
