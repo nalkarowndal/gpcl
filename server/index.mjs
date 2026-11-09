@@ -11,7 +11,11 @@ const files = {
   '/style.css': ['style.css', 'text/css; charset=utf-8'],
   '/app.js': ['app.js', 'text/javascript; charset=utf-8'],
   '/office.js': ['office.js', 'text/javascript; charset=utf-8'],
-  '/idle-sim.js': ['idle-sim.js', 'text/javascript; charset=utf-8']
+  '/idle-sim.js': ['idle-sim.js', 'text/javascript; charset=utf-8'],
+  '/mini.html': ['mini.html', 'text/html; charset=utf-8'],
+  '/mini.css': ['mini.css', 'text/css; charset=utf-8'],
+  '/mini.js': ['mini.js', 'text/javascript; charset=utf-8'],
+  '/mini-scene.js': ['mini-scene.js', 'text/javascript; charset=utf-8']
 };
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../public');
 const model = new OfficeModel();
