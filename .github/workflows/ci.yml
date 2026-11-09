@@ -1,0 +1,25 @@
+name: Pixel Office CI
+
+on:
+  push:
+    branches: [main, 'feat/**']
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Syntax check
+        run: |
+          node --check server/index.mjs
+          node --check server/model.mjs
+          node --check scripts/watch-codex.mjs
+          node --check public/app.js
+          node --check public/office.js
+      - name: Unit tests
+        run: npm test
