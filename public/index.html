@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#111925" />
+  <meta name="description" content="Codex와 GPT 작업 이벤트를 작은 픽셀아트 사무실로 보여주는 로컬 시각화 도구" />
+  <title>GPT Pixel Office — Your AI team, in pixels.</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="top-brand">
+        <div class="brand-tile" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+        <div class="brand-copy"><strong>GPT <em>PIXEL</em> OFFICE</strong><span>AI WORKSPACE VISUALIZER</span></div>
+      </div>
+      <nav class="top-nav" aria-label="주요 보기">
+        <button class="top-nav-item is-current" type="button" aria-current="page">▦ &nbsp;Office view</button>
+        <span class="nav-separator"></span>
+        <span class="nav-caption">A tiny world for your big ideas.</span>
+      </nav>
+      <div class="top-actions">
+        <div id="connection-pill" class="connection-pill"><span class="connection-dot"></span><span id="connection-text">연결 확인 중</span></div>
+        <a class="github-link" href="https://github.com/nalkarowndal/gpcl" target="_blank" rel="noopener noreferrer" aria-label="GitHub 저장소 열기">GitHub ↗</a>
+      </div>
+    </header>
+    <div class="dashboard">
+      <aside class="left-rail">
+        <div class="rail-scroll">
+          <div class="rail-heading"><span class="heading-dash"></span> WORKSPACE</div>
+          <div class="mode-selector" role="group" aria-label="작업 데이터 모드">
+            <button id="mode-demo" class="mode-button active" type="button" aria-pressed="true">◈ DEMO</button>
+            <button id="mode-live" class="mode-button" type="button" aria-pressed="false">● LIVE</button>
+          </div>
+          <div id="mode-help" class="mode-help">데모 데이터로 픽셀 사무실을 미리 둘러보세요.</div>
+          <div class="sidebar-section">
+            <div class="section-title"><span>YOUR SESSIONS</span><span id="session-count" class="tiny-counter">03</span></div>
+            <div id="session-list" class="session-list"></div>
+          </div>
+          <div class="sidebar-section agent-section">
+            <div class="section-title"><span>TEAM MEMBERS</span><span id="agent-count" class="tiny-counter">06</span></div>
+            <div id="agent-list" class="agent-list"></div>
+          </div>
+        </div>
+        <div class="sidebar-foot">
+          <div class="sidebar-foot-icon">✳</div>
+          <div><strong>Make work feel alive.</strong><span>실제 작업은 Codex 연동 후 표시됩니다.</span></div>
+        </div>
+      </aside>
+      <main class="main-area">
+        <section class="intro">
+          <div class="intro-text"><span class="eyebrow"><span class="accent-line"></span> WELCOME TO YOUR LITTLE OFFICE</span>
+            <h1>오늘도, AI 팀은 <span>열일 중!</span><span class="sparkle"> ✦</span></h1>
+            <p>보이지 않던 GPT의 작업 과정을 살아 움직이는 픽셀 사무실에서 만나보세요.</p>
+          </div>
+          <div class="stats-row" aria-label="작업 현황">
+            <div class="stat"><span class="stat-icon mint">▣</span><div><small>ACTIVE AGENTS</small><strong id="stat-agents">0<span class="stat-suffix"> 명</span></strong></div></div>
+            <div class="stat"><span class="stat-icon peach">✓</span><div><small>COMPLETED</small><strong id="stat-completed">0<span class="stat-suffix"> 작업</span></strong></div></div>
+            <div class="stat"><span class="stat-icon lilac">⌘</span><div><small>TOOL CALLS</small><strong id="stat-tools">0<span class="stat-suffix"> 회</span></strong></div></div>
+          </div>
+        </section>
+        <section class="office-card" aria-label="픽셀아트 AI 사무실">
+          <div class="office-card-header">
+            <div class="office-card-title"><span class="office-cube">▥</span><div><strong>THE PIXEL WORKSPACE</strong><small>Floor 01 <span class="small-divider">/</span> Team HQ</small></div></div>
+            <div class="office-card-right"><span id="canvas-mode-label" class="canvas-mode demo-label">● DEMO WORLD</span><span id="office-clock" class="office-clock">--:--</span></div>
+          </div>
+          <div class="canvas-frame">
+            <canvas id="officeCanvas" role="img" aria-label="작업 상태에 따라 움직이는 캐릭터와 컴퓨터가 배치된 픽셀아트 사무실"></canvas>
+            <div class="scene-corner top-left"><span class="blinking-square"></span> <span id="canvas-status">SIMULATION IS RUNNING</span></div>
+            <div class="scene-corner bottom-right">✦ <span>BUILT WITH LITTLE PIXELS & BIG IDEAS</span></div>
+          </div>
+          <div class="office-bottom">
+            <div class="now-playing"><span class="now-playing-icon">♫</span><div><small>CURRENTLY WORKING ON</small><strong id="current-task">데모: 새로운 웹사이트 디자인 작업</strong></div></div>
+            <div class="progress-info"><div class="progress-top"><span>SESSION PROGRESS</span><strong id="progress-value">0%</strong></div><div class="progress-track"><div id="progress-fill"></div></div></div>
+          </div>
+        </section>
+        <section class="below-grid">
+          <div class="panel task-panel">
+            <div class="panel-heading"><div><span class="panel-eyebrow">OVERVIEW</span><h2>프로젝트 진행 상황 <span class="soft-star">✳</span></h2></div><span id="detail-status" class="detail-status">WORKING</span></div>
+            <h3 id="detail-title">Design System Renewal</h3>
+            <p id="detail-description">현재 선택된 세션의 작업 상태를 확인할 수 있습니다.</p>
+            <div class="detail-metrics"><div><span>세션 내 에이전트</span><strong id="detail-agents">0</strong></div><div><span>완료된 작업</span><strong id="detail-completed">0</strong></div><div><span>사용한 도구</span><strong id="detail-tools">0</strong></div></div>
+          </div>
+          <div class="panel guide-panel">
+            <div class="guide-star">✷</div><span class="panel-eyebrow">LET'S GET STARTED</span>
+            <h2>실제 GPT 작업을 연결해보세요</h2>
+            <p>Codex CLI에서 작업을 실행하면 팀원들이 도구 사용과 작업 상태에 맞게 움직입니다.</p>
+            <div class="mini-command"><code>npm run codex -- "작업 지시"</code><button id="copy-command" type="button" title="명령어 복사">복사</button></div>
+          </div>
+        </section>
+      </main>
+      <aside class="right-rail">
+        <div class="activity-head"><div><span class="rail-heading"><span class="heading-dash"></span> REAL-TIME MONITOR</span><h2>Activity feed <span class="activity-star">✧</span></h2><p>작은 사무실에서 벌어지는 모든 일</p></div><span id="event-total" class="activity-count">0</span></div>
+        <div class="filter-row" role="group" aria-label="이벤트 필터"><button class="filter active" data-filter="all" aria-pressed="true" type="button">All updates</button><button class="filter" data-filter="tasks" aria-pressed="false" type="button">Tasks</button><button class="filter" data-filter="tools" aria-pressed="false" type="button">Tools</button></div>
+        <div id="activity-list" class="activity-list" aria-live="polite"></div>
+        <div class="right-bottom">
+          <div class="tip-icon">✦</div><div><strong>Little tip!</strong><p>LIVE 모드에서는 실제 수신된 이벤트만 표시해요. 데모 모드에는 샘플 이벤트가 사용돼요.</p></div>
+        </div>
+      </aside>
+    </div>
+    <footer class="footer"><span>© GPT PIXEL OFFICE <span class="footer-dot">•</span> a tiny companion for your coding journey</span><span>LOCAL-FIRST <span class="footer-dot">✦</span> OPEN SOURCE</span></footer>
+  </div>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

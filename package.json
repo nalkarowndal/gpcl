@@ -1,0 +1,14 @@
+{
+  "name": "gpt-pixel-office",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Local-first pixel art office for Codex and GPT task events",
+  "scripts": {
+    "start": "node server/index.mjs",
+    "dev": "node --watch server/index.mjs",
+    "codex": "node scripts/watch-codex.mjs",
+    "test": "node --test"
+  },
+  "engines": { "node": ">=20" }
+}
