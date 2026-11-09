@@ -10,7 +10,8 @@ const files = {
   '/index.html': ['index.html', 'text/html; charset=utf-8'],
   '/style.css': ['style.css', 'text/css; charset=utf-8'],
   '/app.js': ['app.js', 'text/javascript; charset=utf-8'],
-  '/office.js': ['office.js', 'text/javascript; charset=utf-8']
+  '/office.js': ['office.js', 'text/javascript; charset=utf-8'],
+  '/idle-sim.js': ['idle-sim.js', 'text/javascript; charset=utf-8']
 };
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../public');
 const model = new OfficeModel();
@@ -140,15 +141,37 @@ const heartbeat = setInterval(() => {
 }, 25000);
 heartbeat.unref();
 
-if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  server.listen(port, host, () => {
-    console.log('GPT Pixel Office → http://' + host + ':' + port);
-    if (process.env.OFFICE_AUTO_DETECT !== '0') {
-      startCodexMonitor(event => {
-        model.ingest(event);
-        publish();
-      });
-      console.log('[Auto Detect] Watching local Codex session lifecycle (metadata only).');
-    }
+/** Start the same local-first server from either Node CLI or the portable Electron app. */
+export async function startOfficeService({ port: listenPort = port, host: listenHost = host } = {}) {
+  if (server.listening) throw new Error('Office server is already listening');
+  await new Promise((resolve, reject) => {
+    const onError = error => { server.off('listening', resolve); reject(error); };
+    server.once('error', onError);
+    server.listen(listenPort, listenHost, () => {
+      server.off('error', onError);
+      resolve();
+    });
   });
+  let stopMonitor = null;
+  if (process.env.OFFICE_AUTO_DETECT !== '0') {
+    stopMonitor = startCodexMonitor(event => {
+      try { model.ingest(event); publish(); } catch { /* Ignore malformed local entries */ }
+    });
+  }
+  const actual = server.address();
+  return {
+    url: 'http://' + listenHost + ':' + actual.port,
+    async close() {
+      if (stopMonitor) { stopMonitor(); stopMonitor = null; }
+      for (const client of clients) { try { client.end(); } catch { /* closed */ } }
+      clients.clear();
+      await new Promise((resolve, reject) => server.close(err => err ? reject(err) : resolve()));
+    }
+  };
+}
+
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  startOfficeService().then(service => {
+    console.log('GPT Pixel Office → ' + service.url);
+  }).catch(error => { console.error('Pixel Office failed to start:', error.message); process.exitCode = 1; });
 }
