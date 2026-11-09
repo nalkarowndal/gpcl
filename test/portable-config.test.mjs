@@ -20,3 +20,18 @@ test('portable Electron window uses secure isolated renderer and local server', 
   assert.match(file,/startOfficeService/);
   assert.match(file,/requestSingleInstanceLock/);
 });
+
+test('pixel-art executable icon is a valid ICO container with multiple sizes', async () => {
+  const icon = await readFile(new URL('../build/icon.ico', import.meta.url));
+  assert.equal(icon.readUInt16LE(0), 0);
+  assert.equal(icon.readUInt16LE(2), 1);
+  assert.ok(icon.readUInt16LE(4) >= 3);
+  const count = icon.readUInt16LE(4);
+  for (let i=0;i<count;i++) {
+    const at=6+i*16;
+    const len=icon.readUInt32LE(at+8);
+    const offset=icon.readUInt32LE(at+12);
+    assert.ok(len > 40);
+    assert.ok(offset+len <= icon.length);
+  }
+});
