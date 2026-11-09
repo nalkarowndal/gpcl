@@ -77,7 +77,10 @@ export class OfficeModel {
       session.progress = 100;
     }
     if (input.type === 'task.failed') session.status = 'error';
-    if (input.type === 'session.ended') session.status = 'done';
+    if (input.type === 'session.ended') {
+      if (session.status !== 'error') session.status = 'done';
+      else agent.status = 'error';
+    }
     if (input.type === 'agent.waiting') session.status = 'waiting';
     if (input.type === 'agent.resumed' || input.type === 'tool.started') session.status = 'working';
     if (input.type === 'tool.started') session.toolCalls += 1;
