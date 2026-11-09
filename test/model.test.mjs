@@ -33,6 +33,8 @@ test('waiting, errors, and resumes have deterministic transitions', () => {
   assert.equal(model.snapshot().sessions[0].status, 'working');
   model.ingest({ sessionId:'x', type:'task.failed' });
   assert.equal(model.snapshot().sessions[0].status, 'error');
+  model.ingest({ sessionId:'x', type:'session.ended' });
+  assert.equal(model.snapshot().sessions[0].status, 'error');
 });
 test('reject invalid input and clamp hostile or oversized data', () => {
   const model = new OfficeModel();
