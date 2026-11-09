@@ -63,18 +63,19 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v4.1.0
+          tag_name: v4.2.0
           target_commitish: ${{ github.sha }}
-          name: GPT Pixel Office 4.1.0 — G1 Pixel Art Pipeline
+          name: GPT Pixel Office 4.2.0 — G2 Character Art & Animation
           body: |
-            G1 graphics pipeline release: validated semantic palettes and sprite atlas runtime.\n            Standalone Windows x64 executable. No installer or separate Node.js installation.
-            Double-click the EXE to launch a frameless, transparent pixel-art room next to your Windows taskbar.
-            Switch freely between floating Cozy Room and compact Taskbar Strip.
-            Includes a new original 4-frame PNG cat sprite fixture (fallback to previous drawing),\n            fixed-step 60Hz NPC simulation and stable 30fps rendering, plus existing animated NPCs,\n            local focus timer, private To-Do notes, synthesized rain ambience,
-            theme presets, Windows tray controls, taskbar docking and separate optional GPT Live dashboard.
-            No installer or separate Node.js installation required.
-            This executable is not digitally code-signed, so Windows SmartScreen may show a warning.
-            Download SHA256SUMS.txt to verify the binary.
+            G2 character art release for GPT Pixel Office: original 32x48px pixel sprites
+            for Mimi, Nori, Pico and Luna. 12 cycles and 66 tagged poses per character.
+            Adds detailed outfits, hairstyles, blinks, 4-way walking and everyday activities.
+            Both Room and Taskbar modes use the same validated PNG/JSON atlases.
+            User interface, native system tray, independent fictional NPC movement,
+            GPT Live task monitor and 25-minute focus timer remain available.
+            Single-file Windows x64 portable EXE. No installer or separate Node.js needed.
+            The file is unsigned and may trigger Windows SmartScreen.
+            Verify the binary with SHA256SUMS.txt.
           files: |
             dist/portable/*.exe
             dist/portable/SHA256SUMS.txt
