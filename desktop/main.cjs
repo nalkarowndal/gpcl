@@ -20,7 +20,10 @@ async function alreadyRunning() {
     const response = await fetch(BASE_URL + '/api/health', { signal: AbortSignal.timeout(1200) });
     if (!response.ok) return false;
     const data = await response.json();
-    return data?.ok === true && data?.app === 'GPT Pixel Office';
+    if (data?.ok !== true || data?.app !== 'GPT Pixel Office') return false;
+    // An older running gpcl process might not serve idle-sim.js.
+    const moduleResponse = await fetch(BASE_URL + '/idle-sim.js', { signal: AbortSignal.timeout(1200) });
+    return moduleResponse.ok;
   } catch { return false; }
 }
 
