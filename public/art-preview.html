@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'">
-<title>GPT Pixel Office · G1 Art Lab</title>
+<title>GPT Pixel Office · G2 Character Art Lab</title>
 <link rel="stylesheet" href="/art-preview.css">
 </head>
 <body>
 <header>
-<div class="kicker">ART LAB / G1 PIPELINE</div>
+<div class="kicker">ART LAB / G2 CHARACTER PRODUCTION</div>
 <h1>Pixel Art Production Lab</h1>
-<p>이 화면은 실제로 생성된 팔레트 JSON과 PNG 아틀라스를 읽습니다. G1의 데이터·선명도를 검증하는 도구이며 G2의 최종 캐릭터 디자인 시안은 아닙니다.</p>
+<p>실제 생성한 4명의 개별 픽셀아트 PNG 아틀라스를 직접 불러와 걷기·작업·일상 모션을 확인할 수 있습니다. G1 팔레트와 고양이 샘플도 함께 제공합니다.</p>
 </header>
 <main>
 <section>
@@ -32,7 +32,30 @@
 <p class="pale">원본 스프라이트 32×32px × 4프레임을 픽셀 경계 보간 없이 확대합니다. 눈 깜박임과 꼬리의 자세 변화가 순환합니다.</p>
 </section>
 <section>
-<h2>03 / G1 Export Contract</h2>
+<div class="picker">
+  <h2>03 / G2 Character Animation Showcase</h2>
+  <label for="character-action">ANIMATION</label>
+  <select id="character-action" aria-label="네 캐릭터의 애니메이션 선택">
+    <option value="idle">Idle · 눈 깜박임</option>
+    <option value="walk_down">Walk · 아래</option>
+    <option value="walk_up">Walk · 위</option>
+    <option value="walk_left">Walk · 왼쪽</option>
+    <option value="walk_right">Walk · 오른쪽</option>
+    <option value="work">Work · 작업</option>
+    <option value="coffee">Coffee · 커피</option>
+    <option value="read">Read · 독서</option>
+    <option value="chat">Chat · 대화</option>
+    <option value="rest">Rest · 휴식</option>
+    <option value="plant">Plant · 화분 돌보기</option>
+    <option value="sit">Sit · 착석</option>
+  </select>
+</div>
+<div id="character-gallery" class="character-gallery" aria-label="G2 네 캐릭터의 실제 픽셀 스프라이트 애니메이션"></div>
+<p id="character-status" class="status" aria-live="polite">G2 캐릭터 PNG 스프라이트를 불러오는 중...</p>
+<p class="pale">각 캐릭터는 32×48px 논리 픽셀을 6배 정수 확대하여 표시합니다. 이 갤러리는 생성된 PNG를 그대로 읽으며 외부 게임 그래픽을 사용하지 않습니다.</p>
+</section>
+<section>
+<h2>04 / G1 + G2 Art Production Contract</h2>
 <p class="pale">원본 소스: <code>assets-source/</code> → Aseprite 또는 원본 아트 생성기 → <code>public/assets/generated/*.png + *.json</code> → 스키마 및 PNG 검증 → Canvas 2D 공통 렌더러.</p>
 <p class="pale">명세: <a href="https://github.com/nalkarowndal/gpcl/blob/main/docs/art/G1_ART_PIPELINE.md">G1_ART_PIPELINE.md</a> · 명령: <code>npm run art:build</code> / <code>npm run art:validate</code>.</p>
 </section>

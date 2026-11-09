@@ -1,4 +1,5 @@
 import { drawAnimation } from './engine/atlas.js';
+import { chooseCharacterAnimation, characterElapsedMs } from './engine/character-animation.js';
 /**
  * Original tiny isometric pixel-art environment.
  * Fictional autonomous citizens, not actual ChatGPT agents.
@@ -19,7 +20,7 @@ export function createCozyWorld(seed=29){
   for(let i=0;i<4;i++){
     const [x,y]=SPOTS[i];
     world.people.push({x,y,tx:x,ty:y,name:NAMES[i],coat:COATS[i],hair:HAIR[i],
-      action:'rest',moving:false,wait:i*.6+.8,step:0});
+      action:'rest',actionAge:0,facing:i%2?'left':'down',moving:false,wait:i*.6+.8,step:0});
   }
   return world;
 }
@@ -27,17 +28,20 @@ export function stepCozyWorld(world,dt){
   const amount=Math.max(0,Math.min(.08,Number(dt)||0));
   world.time+=amount;
   for(const p of world.people){
+    p.actionAge=(p.actionAge||0)+amount;
     if(p.wait>0){p.wait-=amount;p.moving=false;continue;}
     const dx=p.tx-p.x,dy=p.ty-p.y,dist=Math.hypot(dx,dy);
     if(dist<1){
-      if(p.moving){p.moving=false;p.wait=1.6+rand(world)*4.5;p.action=['coffee','rest','read','chat','plant'][Math.floor(rand(world)*5)];}
-      else{const target=SPOTS[Math.floor(rand(world)*SPOTS.length)];p.tx=target[0];p.ty=target[1];p.moving=true;p.action='walk';}
+      if(p.moving){p.moving=false;p.wait=1.6+rand(world)*4.5;p.action=['coffee','rest','read','chat','plant','work','sit'][Math.floor(rand(world)*7)];p.actionAge=0;}
+      else{const target=SPOTS[Math.floor(rand(world)*SPOTS.length)];p.tx=target[0];p.ty=target[1];p.moving=true;p.action='walk';p.actionAge=0;}
     }else{
       const speed=22*amount;
       p.x+=dx/dist*Math.min(dist,speed);
       p.y+=dy/dist*Math.min(dist,speed);
       p.step+=amount*9;
       p.moving=true;
+      if(Math.abs(dx)>Math.abs(dy))p.facing=dx>=0?'right':'left';
+      else p.facing=dy>=0?'down':'up';
     }
   }
   return world;
@@ -105,6 +109,23 @@ function drawWindow(ctx,c,t){
   }
   poly(ctx,[[119,98],[122,96],[122,120],[119,122]],c.trim);
 }
+function drawResidentSprite(ctx,p,i,t,art,mini=false) {
+  const sprite=art?.characters?.[p.name];
+  const name=chooseCharacterAnimation(p);
+  if(sprite && sprite.atlas.animations[name]) {
+    // Foot-anchored, integer-positioned shadow + uniform atlas pivot.
+    box(ctx,p.x-11,p.y+1,23,3,'#382d4566');
+    const elapsed=characterElapsedMs(p,t,i);
+    if(drawAnimation(ctx,sprite,name,elapsed,p.x,p.y,1)) {
+      if(!mini) {
+        const txt=p.moving?'♪':{coffee:'☕',rest:'Zz',read:'BOOK',chat:'...',plant:'✿',work:'⌨',sit:'~'}[p.action]||'...';
+        if(Math.sin(t*.7+i)>-.5)label(ctx,txt,p.x+20,p.y-50,'#ffe6b9',8);
+      }
+      return;
+    }
+  }
+  resident(ctx,p,i,t,mini);
+}
 function drawPet(ctx,art,x,y,t) {
   // G1 atlas proof; always retain existing procedural fallback.
   if (!drawAnimation(ctx,art?.cat,'idle',t*1000,x,y,1)) cat(ctx,x,y,t);
@@ -161,7 +182,7 @@ function drawRoom(ctx,world,theme,working,art){
   potted(ctx,399,166,c,t+1);
   // NPCs are fictional ambient residents.
   const items=world.people.slice().sort((a,b)=>a.y-b.y);
-  for(const p of items)resident(ctx,p,world.people.indexOf(p),t,false);
+  for(const p of items)drawResidentSprite(ctx,p,world.people.indexOf(p),t,art,false);
   drawPet(ctx,art,312+Math.sin(t*.5)*5,220,t);
   // Cozy particle sparkle.
   if(working){
@@ -187,7 +208,7 @@ function drawBar(ctx,world,theme,working,art){
   for(let i=0;i<world.people.length;i++){
     const p=world.people[i];
     const x=100+i*88+Math.sin(t*(.7+i*.18)+i)*21;
-    resident(ctx,{...p,x,y:71,moving:p.moving,step:p.step},i,t,true);
+    drawResidentSprite(ctx,{...p,x,y:78,moving:p.moving,step:p.step},i,t,art,true);
   }
   drawPet(ctx,art,430+Math.sin(t*.9)*6,75,t);
   if(working)label(ctx,'● GPT WORKING',394,16,'#c0f7d2',9);

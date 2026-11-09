@@ -1,3 +1,31 @@
+## 4.2.0 — Phase G2: 4종 캐릭터 픽셀아트 / 애니메이션 적용
+
+G1의 스프라이트 엔진을 활용해 **Mimi, Nori, Pico, Luna** 네 주민을 전용 32×48px RGBA 스프라이트로 교체합니다.
+이 주민들은 GPT의 실제 도구 실행과 무관하게 움직이는 **가상 NPC**입니다.
+
+- **4명 × 66프레임 = 총 264프레임**, 네 캐릭터마다 12개 애니메이션을 가집니다: 대기, 4방향 이동, 작업, 커피, 독서, 대화, 휴식, 식물 관리, 앉기
+- 헤어/의상/표정/소품을 캐릭터별로 다르게 설정하고, 실제 움직임으로 방향별 스프라이트를 선택합니다.
+- Cozy Room과 Taskbar 모두 동일한 PNG/JSON 아틀라스를 사용합니다.
+- 애셋 하나가 잘못되었을 경우 그 캐릭터만 기존 도형 그래픽으로 자동 복귀합니다.
+- 아트 원본은 `scripts/g2-characters.mjs`의 자체 작성 픽셀 드로잉 소스이며 재현 가능한 PNG 생성입니다.
+- **G2 아트 갤러리:** `npm start` 실행 후 <http://127.0.0.1:3333/art-preview.html>에서 네 캐릭터의 12가지 행동을 6배 정수 확대해 볼 수 있습니다.
+- 아트 자동검사: G2 캐릭터 누락·프레임·PNG 색상·좌표·피벗·방향 선택·Room/Taskbar 렌더링·G1 호환성 검증.
+
+상세 명세: [G2_CHARACTER_DESIGN.md](docs/art/G2_CHARACTER_DESIGN.md)
+
+```powershell
+npm run art:build
+npm run art:validate
+npm test
+npm start
+```
+
+이번 단계의 범위는 **캐릭터 그래픽 교체**입니다. 가구의 깊이 마스크/배치와 조명은 G3/G4에서 진행합니다.
+코드로 제작한 픽셀 스프라이트이며 원작 게임의 그래픽을 복사하지 않았습니다.
+정식 Windows 실행파일: <https://github.com/nalkarowndal/gpcl/releases/tag/v4.2.0>
+
+---
+
 # GPT Pixel Office
 
 > **GPT가 일하는 모습을 눈으로 보는 작은 픽셀아트 오피스.**  

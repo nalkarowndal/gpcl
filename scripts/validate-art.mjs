@@ -48,9 +48,23 @@ export async function validateArt({assetsRoot=root, requireSample=true}={}) {
   const manifests=entries.filter(name=>name.endsWith('.json') && !name.endsWith('.aseprite.json'));
   check(manifests.length>0,'no generated atlas JSON found');
   if(requireSample)check(manifests.includes('cat-demo.json'),'missing original cat test sheet');
+  const requiredResidents=['mimi','nori','pico','luna'];
+  for(const name of requiredResidents)
+    check(manifests.includes('character-'+name+'.json'),'missing G2 character sprite atlas: '+name);
+
   let images=0,frames=0;
   for(const name of manifests) {
     const atlas=validateAtlas(JSON.parse(await readFile(join(outputDir,name),'utf8')));
+    if(name.startsWith('character-')){
+      check(atlas.frameSize.w===32 && atlas.frameSize.h===48,'G2 frame size must be 32x48: '+name);
+      check(atlas.origin.x===16 && atlas.origin.y===45,'G2 feet pivot mismatch: '+name);
+      const requiredActions=['idle','walk_down','walk_up','walk_left','walk_right',
+        'work','coffee','read','chat','rest','plant','sit'];
+      for(const action of requiredActions)
+        check(Array.isArray(atlas.animations[action]?.frames) && atlas.animations[action].frames.length>=4,
+          'G2 missing action '+action+' in '+name);
+      check(atlas.frames.length===66,'G2 sprite must contain 66 frames: '+name);
+    }
     const imageName=atlas.image;
     check(basename(imageName)===imageName,'unsafe atlas image filename');
     const file=await readFile(join(outputDir,imageName));
