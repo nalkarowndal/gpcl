@@ -12,3 +12,6 @@ extensions/vscode/runtime/
 dist/
 
 build/icon.ico
+
+# G1 art outputs are generated deterministically via npm run art:build.
+/public/assets/generated/
