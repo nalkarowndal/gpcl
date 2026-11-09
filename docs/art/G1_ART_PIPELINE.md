@@ -96,6 +96,13 @@ npm run build:portable
 `art:validate` tests every canonical atlas under `public/assets/generated/` and palette files.
 No third-party commercial sprites are included.
 
+## G1 visual verification gallery
+
+Run `npm start` then open <http://127.0.0.1:3333/art-preview.html>. The page fetches the real
+3 palette JSONs, the generated cat PNG/JSON atlas, and displays the same animated frames at
+2×/4×/8× scaling with integer grid nearest-neighbor. It reports missing/malformed art instead of
+silently pretending success. This gallery is a **human visual QA aid**, not automated Windows GUI validation.
+
 ## Rendering and QA requirements
 
 - Do not use CSS `filter: blur` for sprite source pixels. A **separate** soft lighting overlay is permitted.
