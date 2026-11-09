@@ -15,7 +15,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write # Only used to publish an official versioned EXE on main.
 
 jobs:
   build-portable:
@@ -56,3 +56,19 @@ jobs:
             dist/portable/SHA256SUMS.txt
           compression-level: 0
           if-no-files-found: error
+      - name: Publish downloadable Windows EXE release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v3.0.0
+          target_commitish: ${{ github.sha }}
+          name: GPT Pixel Office 3.0.0 — Windows Portable
+          body: |
+            Standalone Windows x64 executable. No installer or separate Node.js installation.
+            Double-click the EXE to enjoy autonomous idle NPC life; CODEX / GPT LIVE remains optional.
+            This executable is not digitally code-signed, so Windows SmartScreen may show a warning.
+            Download SHA256SUMS.txt to verify the binary.
+          files: |
+            dist/portable/*.exe
+            dist/portable/SHA256SUMS.txt
+          fail_on_unmatched_files: true
