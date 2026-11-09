@@ -1,18 +1,55 @@
 {
   "name": "gpt-pixel-office",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "private": true,
   "type": "module",
-  "description": "Local-first pixel art office for Codex and GPT task events",
+  "description": "Idle pixel-art office with optional GPT/Codex real-time visualization",
   "scripts": {
     "start": "node server/index.mjs",
     "dev": "node --watch server/index.mjs",
     "codex": "node scripts/watch-codex.mjs",
     "test": "node --test",
     "prepare:extension": "node scripts/prepare-extension.mjs",
-    "pack:vsix": "node scripts/prepare-extension.mjs && node scripts/package-vsix.mjs"
+    "pack:vsix": "node scripts/prepare-extension.mjs && node scripts/package-vsix.mjs",
+    "build:portable": "electron-builder --win portable --x64 --publish never",
+    "desktop:dev": "electron ."
   },
   "engines": {
     "node": ">=20"
+  },
+  "main": "desktop/main.cjs",
+  "devDependencies": {
+    "electron": "39.5.0",
+    "electron-builder": "26.18.0"
+  },
+  "build": {
+    "appId": "app.gptpixeloffice.desktop",
+    "productName": "GPT Pixel Office",
+    "copyright": "Copyright © 2026 GPT Pixel Office contributors",
+    "asar": false,
+    "files": [
+      "desktop/**/*",
+      "server/**/*",
+      "public/**/*",
+      "package.json",
+      "LICENSE"
+    ],
+    "directories": {
+      "output": "dist/portable"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "portable": {
+      "artifactName": "GPT-Pixel-Office-${version}-portable-${arch}.exe"
+    },
+    "publish": null
   }
 }
